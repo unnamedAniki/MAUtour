@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MAUtour.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MAUtour"
+    Shell.FlyoutBehavior="Flyout">
+    <Shell.FlyoutHeader>
+        <Label Text="Image"/>
+    </Shell.FlyoutHeader>
+    
+    <ShellContent
+        Title="Главная"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+    <ShellContent
+        Title="Карта"
+        ContentTemplate="{DataTemplate local:MapPage}"
+        Route="MapPage" />
+    <ShellContent
+        Title="Метки"
+        ContentTemplate="{DataTemplate local:MarksPage}"
+        Route="MarksPage" />
+    <ShellContent
+        Title="Маршруты"
+        ContentTemplate="{DataTemplate local:RoutesPage}"
+        Route="RoutesPage" />
+
+    <Shell.FlyoutFooter>
+        <Label Text="User"/>
+    </Shell.FlyoutFooter>
+</Shell>
