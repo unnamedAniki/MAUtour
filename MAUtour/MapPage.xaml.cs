@@ -18,6 +18,7 @@ public partial class MapPage : ContentPage
         var footerLaber = new Button { Text = "Add a pin" };
         view.Map?.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer());
         footerLaber.Clicked += newPin;
+
         Content = new Grid
         {
             RowDefinitions =
