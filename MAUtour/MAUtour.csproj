@@ -55,18 +55,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="MapPage.xaml">
+	  <MauiXaml Update="Views\MapPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="MarksPage.xaml">
+	  <MauiXaml Update="Views\MarksPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="PinPage.xaml">
+	  <MauiXaml Update="Views\PinPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="RoutesPage.xaml">
+	  <MauiXaml Update="Views\RoutesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ViewModels\" />
 	</ItemGroup>
 
 </Project>

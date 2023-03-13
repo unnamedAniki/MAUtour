@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAUtour", "MAUtour\MAUtour.csproj", "{F143F1FC-23F7-4868-9687-2C2E67C9586C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUtour.Utils", "MAUtour.Utils\MAUtour.Utils.csproj", "{B7246533-EAAB-4F35-B5A8-182AE0C895C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{F143F1FC-23F7-4868-9687-2C2E67C9586C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F143F1FC-23F7-4868-9687-2C2E67C9586C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F143F1FC-23F7-4868-9687-2C2E67C9586C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
