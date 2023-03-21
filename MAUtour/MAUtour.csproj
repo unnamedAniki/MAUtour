@@ -73,4 +73,8 @@
 	  <Folder Include="ViewModels\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\MAUtour.Utils\MAUtour.Utils.csproj" />
+	</ItemGroup>
+
 </Project>

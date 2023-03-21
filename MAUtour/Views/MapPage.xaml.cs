@@ -5,6 +5,8 @@ using Mapsui.Layers;
 using Mapsui.UI.Maui;
 using Mapsui.Rendering.Skia;
 using Microsoft.Maui.Animations;
+using MAUtour.Utils.DbConnect;
+using Microsoft.EntityFrameworkCore;
 
 namespace MAUtour;
 
@@ -12,10 +14,11 @@ public partial class MapPage : ContentPage
 {
     private MapView view = new MapView();
     private Entry searchLabel;
+    private ApplicationContext context;
     public MapPage()
     {
         InitializeComponent();
-
+        context = new ApplicationContext();
         searchLabel = new Entry { Text = "Search something" };
         var addButton = new Button { Text = "Add a pin" };
         var legendView = new ScrollView
@@ -27,6 +30,8 @@ public partial class MapPage : ContentPage
         addButton.Clicked += newPin;
         view.PinClicked += View_SelectedPinChanged;
         
+
+
         Content = new Grid
         {
             RowDefinitions =
@@ -93,22 +98,22 @@ public partial class MapPage : ContentPage
     }
     private void newPin(object sender, EventArgs e)
     {
-        var latRand = new Random(10);
-        for (int i = 0; i < 5; i++)
-        {
-            var pin = new Pin()
-            {
-                Position = new Position(latRand.NextDouble() * 30, latRand.NextDouble() * 30),
-                Label = "test" + i.ToString(),
-                IsVisible = true,
-                MinVisible = 0.5,
-                Tag = "test",
-                Address = "TestAddress",
-                Color = Color.FromRgba(i * 50, i, i * 60, 255)
-            };
-            view.Pins.Add(pin);
-        }
-        
+        //var test = context.PinRoutes.Include(p=>p.UserPins).Include(p=>p.UserRoutes).Where(p=>p.RouteId == 1).ToList();
+            
+        //foreach(var route in test)
+        //{
+        //    var pin = new Pin()
+        //    {
+        //        //Position = new Position(route.UserPins., latRand.NextDouble() * 30),
+        //        //Label = "test" + i.ToString(),
+        //        //IsVisible = true,
+        //        //MinVisible = 0.5,
+        //        //Tag = "test",
+        //        //Address = "TestAddress",
+        //        //Color = Color.FromRgba(i * 50, i, i * 60, 255)
+        //    };
+        //    view.Pins.Add(pin);
+        //}
         view.RefreshData();
     }
 
