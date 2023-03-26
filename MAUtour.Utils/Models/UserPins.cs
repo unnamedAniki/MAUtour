@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MAUtour.Utils.Models
 {
@@ -20,6 +14,6 @@ namespace MAUtour.Utils.Models
         public Users Users { get; set; }
         public int TypeId { get; set; }
         public TypeOfPins Type { get; set; }
-        public virtual ICollection<PinsRoutes> PinsRoutes { get; set; } = new List<PinsRoutes>();
+        public virtual ICollection<PinsRoutes> Pins { get; set; }
     }
 }

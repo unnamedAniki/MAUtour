@@ -10,6 +10,19 @@ namespace MAUtour.Utils.DbConnect.TestData
 {
     internal class TestRoutesData
     {
+        public static TypeOfRoutes[] CreateRouteTypes()
+        {
+            List<TypeOfRoutes> routes = new List<TypeOfRoutes>() 
+            {
+                new TypeOfRoutes()
+                {
+                    Id = 1,
+                    Name = "Tour"
+                }
+            };
+            return routes.ToArray();
+        }
+
         public static UserRoutes[] CreateRoutesData()
         {
             List<UserRoutes> routes = new List<UserRoutes>
@@ -18,6 +31,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                 {
                     Id = 1,
                     Name = "Momuments Alesha tour",
+                    TypeId = 1,
                     Description = "Such an another momument"
                 }
             };
@@ -29,23 +43,27 @@ namespace MAUtour.Utils.DbConnect.TestData
             {
                 new PinsRoutes()
                 {
+                    Id = 1,
                     RouteId = 1,
-                    PinsId = 1
+                    PinId = 1
                 },
                 new PinsRoutes()
                 {
+                    Id = 2,
                     RouteId = 1,
-                    PinsId = 2
+                    PinId = 2
                 },
                 new PinsRoutes()
                 {
+                    Id = 3,
                     RouteId = 1,
-                    PinsId = 3
+                    PinId = 3
                 },
                 new PinsRoutes()
                 {
+                    Id = 4,
                     RouteId = 1,
-                    PinsId = 4
+                    PinId = 4
                 }
             };
             return pinsRoutes.ToArray();

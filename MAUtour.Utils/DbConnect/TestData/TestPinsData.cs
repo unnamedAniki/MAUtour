@@ -9,6 +9,18 @@ namespace MAUtour.Utils.DbConnect.TestData
 {
     internal class TestPinsData
     {
+        public static TypeOfPins[] CreatePinTypes()
+        {
+            List<TypeOfPins> pins = new List<TypeOfPins>
+            {
+                new TypeOfPins()
+                {
+                    Id = 1,
+                    Name = "Default"
+                }
+            };
+            return pins.ToArray();
+        }
         public static UserPins[] CreatePinsData()
         {
             List<UserPins> pins = new List<UserPins>();
@@ -23,6 +35,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Latitude = 10,
                         Longitude = 10,
                         UserId = 1,
+                        TypeId = 1
                     },
                     new UserPins()
                     {
@@ -32,6 +45,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Latitude = 9,
                         Longitude = 11,
                         UserId = 2,
+                        TypeId = 1
                     },
                     new UserPins()
                     {
@@ -41,6 +55,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Latitude = 8,
                         Longitude = 12,
                         UserId = 3,
+                        TypeId = 1
                     },
                     new UserPins()
                     {
@@ -50,6 +65,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Latitude = 7,
                         Longitude = 13,
                         UserId = 4,
+                        TypeId = 1
                     }
                 });
             return pins.ToArray();

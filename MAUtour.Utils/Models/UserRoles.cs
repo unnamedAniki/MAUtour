@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Utils.Models
 {
+    [PrimaryKey("Id")]
     public class UserRoles
     {
+        public int Id { get; set; } 
         public int UserId { get; set; }
         public Users Users { get; set; }
         public int RoleId { get; set; }

@@ -4,35 +4,55 @@
              x:Class="MAUtour.MainPage">
     <ScrollView>
         <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
             VerticalOptions="Center">
-            <Image
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
-                HeightRequest="200"
-                HorizontalOptions="Center" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackLayout 
+                    Grid.Column="1" 
+                    Spacing="25"
+                    Padding="30,0">
+                    <Image 
+                        Source="logo.svg"
+                        Aspect="Center"/>
+                    <Label
+                        Text="Авторизация"
+                        SemanticProperties.HeadingLevel="Level4"
+                        FontSize="24"
+                        HorizontalOptions="Center" />
 
-            <Label
-                Text="Hello, World!"
-                SemanticProperties.HeadingLevel="None"
-                FontSize="1"
-                HorizontalOptions="Center" />
-
-            <Label
-                Text="Пизда to .NET Multi-platform App UI"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
-                HorizontalOptions="Center" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Center" />
-
+                    <Label
+                        Text="Авторизируйтесь, чтобы сохранялись ваши метки"
+                        SemanticProperties.HeadingLevel="Level2"
+                        SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                        FontSize="18"
+                        HorizontalOptions="Center" />
+                    <Entry x:Name="email" Placeholder="Введите вашу почту" Text=""/>
+                    <Entry x:Name="password" Placeholder="Введите ваш пароль" IsPassword="True" Text=""/>
+                    <Button
+                        x:Name="AuthBtn"
+                        Text="Авторизоваться" 
+                        SemanticProperties.Hint="Кнопка входа"
+                        Clicked="Authorization"
+                        HorizontalOptions="Center">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                 Binding="{Binding Source={x:Reference email}, Path=Text.Length}"
+                                 Value="0">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button"
+                                 Binding="{Binding Source={x:Reference password}, Path=Text.Length}"
+                                 Value="0">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </StackLayout>
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 
