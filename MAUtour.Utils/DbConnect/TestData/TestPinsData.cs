@@ -32,8 +32,8 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Id = 1,
                         Name = "Momuments Alesha",
                         Description = "Such an another momument",
-                        Latitude = 10,
-                        Longitude = 10,
+                        Latitude = 68.99327F,
+                        Longitude = 33.07197F,
                         UserId = 1,
                         TypeId = 1
                     },
@@ -42,8 +42,8 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Id = 2,
                         Name = "MASU",
                         Description = "Simple University",
-                        Latitude = 9,
-                        Longitude = 11,
+                        Latitude = 68.96356F,
+                        Longitude = 33.07387F,
                         UserId = 2,
                         TypeId = 1
                     },
@@ -52,8 +52,8 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Id = 3,
                         Name = "Murmansk's port", 
                         Description = "Fish heaven",
-                        Latitude = 8,
-                        Longitude = 12,
+                        Latitude = 68.97642F,
+                        Longitude = 33.06396F,
                         UserId = 3,
                         TypeId = 1
                     },
@@ -62,8 +62,8 @@ namespace MAUtour.Utils.DbConnect.TestData
                         Id = 4,
                         Name = "Murmansk Mall",
                         Description = "WallMart? No, its a Murmansk Mall",
-                        Latitude = 7,
-                        Longitude = 13,
+                        Latitude = 68.95737F,
+                        Longitude = 33.06986F,
                         UserId = 4,
                         TypeId = 1
                     }

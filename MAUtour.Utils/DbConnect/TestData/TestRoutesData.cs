@@ -32,6 +32,7 @@ namespace MAUtour.Utils.DbConnect.TestData
                     Id = 1,
                     Name = "Momuments Alesha tour",
                     TypeId = 1,
+                    UserId = 1,
                     Description = "Such an another momument"
                 }
             };

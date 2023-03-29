@@ -21,6 +21,7 @@ namespace MAUtour.Utils.DbConnect
         
         public ApplicationContext()
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

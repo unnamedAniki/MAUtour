@@ -2,5 +2,47 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUtour.MapPage"
+             xmlns:mapsui ="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
              Title="Карта">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Entry
+            x:Name="searchLabel"
+            Grid.Row="0"
+            Placeholder="Введите текст для поиска"/>
+        <Border
+            Grid.Row="1"
+            Margin="5"
+            HorizontalOptions="FillAndExpand">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <mapsui:MapView
+                x:Name="mapView" 
+                VerticalOptions="FillAndExpand"
+                HorizontalOptions="Fill">
+            </mapsui:MapView>
+        </Border>
+        <Border 
+            x:Name="mapContext"
+            Grid.Row="2"
+            IsVisible="false"
+            Padding="10"
+            Margin="5"
+            HorizontalOptions="FillAndExpand">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <StackLayout>
+                <Label x:Name = "nameLabel" Text="Наименование: "/>
+                <Label x:Name = "descriptionLabel" Text="Описание: "/>
+                <Label x:Name = "additionalInfo" Text="Дополнительная информация: "/>
+            </StackLayout>
+        </Border>
+    </Grid>
 </ContentPage>

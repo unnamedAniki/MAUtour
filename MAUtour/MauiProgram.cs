@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MAUtour.Utils.DbConnect;
+
+using Microsoft.Extensions.Logging;
 
 using SkiaSharp.Views.Maui.Controls.Hosting;
 
@@ -8,6 +10,7 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		var context = new ApplicationContext();
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
