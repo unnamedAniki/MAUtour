@@ -1,28 +1,24 @@
-using Mapsui.UI.Maui;
-using Mapsui.Rendering.Skia;
-using Mapsui.Logging;
-using MAUtour.Utils.DbConnect;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Dispatching;
-using Microsoft.Maui.Devices.Sensors;
-using Mapsui.Layers;
-using Mapsui.Providers;
-using Mapsui.Widgets;
-using VerticalAlignment = Mapsui.Widgets.VerticalAlignment;
-using HorizontalAlignment = Mapsui.Widgets.HorizontalAlignment;
-using Color = Mapsui.Styles.Color;
-using Font = Mapsui.Styles.Font;
-using Mapsui.Extensions;
-using Mapsui.Widgets.ScaleBar;
+using ExCSS;
+
 using Mapsui;
-using NetTopologySuite.Shape.Random;
-using Mapsui.Styles;
-using Brush = Mapsui.Styles.Brush;
-using Mapsui.Tiling;
+using Mapsui.Extensions;
+using Mapsui.Layers;
 using Mapsui.Nts;
+using Mapsui.Providers;
+using Mapsui.Styles;
+using Mapsui.UI;
+using Mapsui.UI.Maui;
+
+using MAUtour.Utils.DbConnect;
+
+using Microsoft.EntityFrameworkCore;
+
+using NetTopologySuite.Geometries;
+
 using SkiaSharp;
-using MAUtour.Utils.Models;
+
+using Brush = Mapsui.Styles.Brush;
+using Color = Mapsui.Styles.Color;
 
 namespace MAUtour;
 
@@ -30,6 +26,7 @@ public partial class MapPage : ContentPage
 {
     private readonly ApplicationContext context;
     private CancellationTokenSource? gpsCancelation;
+    private List<Pin> Pins= new List<Pin>();
     public MapPage()
     {
         InitializeComponent();
@@ -40,26 +37,30 @@ public partial class MapPage : ContentPage
             IsMapInfoLayer = true,
             Name = "test"
         });
-        mapView.Map.Layers.Add(CreateInfoLayer(mapView.Map.Extent));
+        var test = new LineString(Pins.Select(p=>p.Feature.Geometry.Coordinates));
+        mapView.Map.Layers.Add(new Polygon { Feature = new GeometryFeature() });
+
         mapView.Map.Info += NewPin;
         //mapView.Map.Limiter.ZoomLimits = new Mapsui.UI.MinMax(1,100);
         mapView.MyLocationLayer.UpdateMyLocation(new Position(68.95997F, 33.07398F));
-
+        FindButton.Clicked += FindButton_Clicked;
         var layer = new GenericCollectionLayer<List<IFeature>>
         {
             Style = SymbolStyles.CreatePinStyle()
         };
         mapView.Map.Layers.Add(layer);
 
-        mapView.Map.Info += (s, e) =>
+        mapView.Map.Info += async (s, e) =>
         {
             if (e.MapInfo?.WorldPosition == null) return;
-
+            if (!await DisplayAlert("Новая метка", "Хотите создать новый маршрут?", "Да", "Нет")) return;
             // Add a point to the layer using the Info position
             layer?.Features.Add(new GeometryFeature
             {
                 Geometry = new NetTopologySuite.Geometries.Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)
             });
+            Pins.Add(new Pin() { Position = new Position(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y) });
+            
             // To notify the map that a redraw is needed.
             layer?.DataHasChanged();
             return;
@@ -72,26 +73,30 @@ public partial class MapPage : ContentPage
         mapView.PinClicked += OnPinClicked;
         StartGPS();
     }
-    private static ILayer CreateInfoLayer(MRect? envelope)
-    {
-        var random = new Random(7);
 
-        return new Layer("Info Layer")
-        {
-            DataSource = RandomPointsBuilder.CreateProviderWithRandomPoints(envelope, 25, random),
-            Style = CreateSymbolStyle(),
-            IsMapInfoLayer = true
-        };
+    private void FindButton_Clicked(object sender, EventArgs e)
+    {
+        searchLabel.IsVisible = true;
     }
 
-    private static SymbolStyle CreateSymbolStyle()
+    private void AddButton_Clicked(object sender, System.EventArgs e)
     {
-        return new SymbolStyle
+        // Get a random location for the new pin
+        double latitude = 0f;
+        double longitude = 0f;
+
+        // Create a new pin object and add it to the pins list
+        Pin newPin = new Pin()
         {
-            SymbolScale = 0.8,
-            Fill = new Brush(new Color(10, 10, 10)),
-            Outline = { Color = Color.Gray, Width = 1 }
+            Label = "New Pin",
+            Position = new Position(latitude, longitude)
         };
+        Pins.Add(newPin);
+
+        // Add the new pin to the map control
+        MapControl mapControl = (MapControl)Content;
+        MemoryProvider layerProvider = (MemoryProvider)mapControl.Map.Layers[0];
+        layerProvider.Features.Add();
     }
 
     private void OnPinClicked(object? sender, PinClickedEventArgs e)
@@ -100,31 +105,13 @@ public partial class MapPage : ContentPage
         {
             if (e.NumOfTaps == 2)
             {
-                // Hide Pin when double click
-                //DisplayAlert($"Pin {e.Pin.Label}", $"Is at position {e.Pin.Position}", "Ok");
                 e.Pin.IsVisible = false;
             }
             if (e.NumOfTaps == 1)
             {
-                if (e.Pin.Callout.IsVisible)
-                {
-                    e.Pin.HideCallout();
-                }
-                else
-                {
-                    var callbackImage = CreateCallbackImage(e.Pin);
-                    e.Pin.Callout.Type = Mapsui.Styles.CalloutType.Detail;
-                    e.Pin.Callout.StrokeWidth = 10;
-                    e.Pin.Callout.RectRadius = 10;
-                    e.Pin.Callout.Title = e.Pin.Address;
-                    e.Pin.Callout.Subtitle = e.Pin.Label;
-                    //e.Pin.Callout.Content = BitmapRegistry.Instance.Register(callbackImage);
-                    e.Pin.Callout.IsClosableByClick = true;
-                    e.Pin.ShowCallout();
-                }
+                mapContext.IsVisible = true;
             } 
         }
-        //mapContext.IsVisible = true;
         e.Handled = true;
     }
 

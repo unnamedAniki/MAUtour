@@ -6,21 +6,40 @@
              Title="Карта">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Entry
-            x:Name="searchLabel"
-            Grid.Row="0"
-            Placeholder="Введите текст для поиска"/>
+        
         <Border
-            Grid.Row="1"
+            ZIndex="1"
+            Margin="5"
+            VerticalOptions="Start"
+            HorizontalOptions="Start"
+            IsVisible="true"
+            BackgroundColor="#D5D5D5">
+            <Border.Shadow>
+                <Shadow Brush="Black" Radius="10"/>
+            </Border.Shadow>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <StackLayout
+                Orientation="Horizontal">
+                <Button x:Name="FindButton" Text="Поиск" FontSize="Micro"/>
+                <Entry
+                    VerticalOptions="FillAndExpand"
+                    HorizontalOptions="FillAndExpand"
+                    x:Name="searchLabel"
+                    Placeholder="Введите текст для поиска"
+                    TextColor="{StaticResource Primary}"
+                    IsVisible="false"/>
+            </StackLayout>
+        </Border>
+        <Border
             Margin="5"
             HorizontalOptions="FillAndExpand">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
+                <RoundRectangle CornerRadius="10"/>
             </Border.StrokeShape>
             <mapsui:MapView
                 x:Name="mapView" 
@@ -28,20 +47,32 @@
                 HorizontalOptions="Fill">
             </mapsui:MapView>
         </Border>
-        <Border 
+        <Border
             x:Name="mapContext"
-            Grid.Row="2"
-            IsVisible="false"
+            IsVisible="true"
             Padding="10"
-            Margin="5"
-            HorizontalOptions="FillAndExpand">
+            Margin="20"
+            HorizontalOptions="Center"
+            VerticalOptions="EndAndExpand"
+            BackgroundColor="#D5D5D5"
+            ZIndex="1">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
+                <RoundRectangle CornerRadius="15" />
             </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Radius="10"/>
+            </Border.Shadow>
             <StackLayout>
-                <Label x:Name = "nameLabel" Text="Наименование: "/>
-                <Label x:Name = "descriptionLabel" Text="Описание: "/>
-                <Label x:Name = "additionalInfo" Text="Дополнительная информация: "/>
+                <Image 
+                    Margin="5"
+                    Source="logo.png"
+                    Aspect="AspectFill"
+                    HeightRequest="200"
+                    WidthRequest="350">
+                </Image>
+                <Label FontSize="Title" x:Name = "nameLabel" Text="Наименование: "/>
+                <Label FontSize="Subtitle" x:Name = "descriptionLabel" Text="Описание: "/>
+                <Label FontSize="Subtitle" x:Name = "additionalInfo" Text="Дополнительная информация: "/>
             </StackLayout>
         </Border>
     </Grid>
