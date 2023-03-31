@@ -4,6 +4,8 @@ using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
 using Mapsui.Nts;
+using Mapsui.Nts.Extensions;
+using Mapsui.Projections;
 using Mapsui.Providers;
 using Mapsui.Styles;
 using Mapsui.UI;
@@ -12,91 +14,125 @@ using Mapsui.UI.Maui;
 using MAUtour.Utils.DbConnect;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls.Shapes;
 
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 
 using SkiaSharp;
 
+using static Microsoft.Maui.ApplicationModel.Permissions;
+
 using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
+using Polyline = Mapsui.UI.Maui.Polyline;
+using Position = Mapsui.UI.Maui.Position;
 
 namespace MAUtour;
 
 public partial class MapPage : ContentPage
 {
-    private readonly ApplicationContext context;
+    //private readonly ApplicationContext context;
     private CancellationTokenSource? gpsCancelation;
-    private List<Pin> Pins= new List<Pin>();
+    private List<Coordinate> Polyline = new List<Coordinate>();
+    private bool isCreatedRoad = true;
     public MapPage()
     {
         InitializeComponent();
-        context = new ApplicationContext();
+        //context = new ApplicationContext();
         mapView.Map.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer());
         mapView.Map.Layers.Add(new WritableLayer()
         {
             IsMapInfoLayer = true,
             Name = "test"
         });
-        var test = new LineString(Pins.Select(p=>p.Feature.Geometry.Coordinates));
-        mapView.Map.Layers.Add(new Polygon { Feature = new GeometryFeature() });
 
-        mapView.Map.Info += NewPin;
+        //mapView.Map.Info += NewPin;
         //mapView.Map.Limiter.ZoomLimits = new Mapsui.UI.MinMax(1,100);
         mapView.MyLocationLayer.UpdateMyLocation(new Position(68.95997F, 33.07398F));
         FindButton.Clicked += FindButton_Clicked;
-        var layer = new GenericCollectionLayer<List<IFeature>>
+        disableRoadMode.Clicked += DisableRoadMode_Clicked;
+        var pinLayer = new GenericCollectionLayer<List<IFeature>>
         {
             Style = SymbolStyles.CreatePinStyle()
         };
-        mapView.Map.Layers.Add(layer);
-
+        
+        mapView.Map.Layers.Add(pinLayer);
+        
         mapView.Map.Info += async (s, e) =>
         {
             if (e.MapInfo?.WorldPosition == null) return;
-            if (!await DisplayAlert("Новая метка", "Хотите создать новый маршрут?", "Да", "Нет")) return;
-            // Add a point to the layer using the Info position
-            layer?.Features.Add(new GeometryFeature
+            if (roadContent.IsVisible == false)
+            {
+                if (!await DisplayAlert("Новая метка", "Хотите создать новый маршрут?", "Да", "Нет") && isCreatedRoad)
+                {
+                    isCreatedRoad = false;
+                    return;
+                }
+                Polyline.Clear();
+            }
+            else
+            {
+                Polyline.Add(new Coordinate(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y));
+                if (Polyline.Count > 1)
+                {
+                    var test = CreateLayer();
+                    mapView.Map.Layers.Add(test);
+                }
+            }
+            roadContent.IsVisible = true;
+            
+            pinLayer?.Features.Add(new GeometryFeature
             {
                 Geometry = new NetTopologySuite.Geometries.Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)
             });
-            Pins.Add(new Pin() { Position = new Position(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y) });
             
-            // To notify the map that a redraw is needed.
-            layer?.DataHasChanged();
+            pinLayer?.DataHasChanged();
+            
             return;
         };
 
         mapView.IsNorthingButtonVisible = false;
         mapView.IsZoomButtonVisible = false;
-        mapView.SelectedPinChanged += View_SelectedPinChanged;
+        //mapView.SelectedPinChanged += View_SelectedPinChanged;
         mapView.MapClicked += OnMapClicked;
         mapView.PinClicked += OnPinClicked;
         StartGPS();
     }
 
+    private void DisableRoadMode_Clicked(object sender, EventArgs e)
+    {
+        roadContent.IsVisible = false;
+        isCreatedRoad = true;
+    }
+
+    public ILayer CreateLayer()
+    {
+        return new Layer("Polygons")
+        {
+            DataSource = new MemoryProvider(CreatePolygon()),
+            Style = null
+        };
+    }
+    private IFeature CreatePolygon()
+    {
+        return new GeometryFeature
+        {
+            Geometry = new LineString(Polyline.ToArray()),
+            Styles = new[]
+            {
+                new VectorStyle
+                {
+                    Line = new Pen(Color.Gray, 10) {PenStrokeCap = PenStrokeCap.Butt, StrokeJoin = StrokeJoin.Miter}
+                }
+            },
+        };
+    }
+        
     private void FindButton_Clicked(object sender, EventArgs e)
     {
         searchLabel.IsVisible = true;
-    }
-
-    private void AddButton_Clicked(object sender, System.EventArgs e)
-    {
-        // Get a random location for the new pin
-        double latitude = 0f;
-        double longitude = 0f;
-
-        // Create a new pin object and add it to the pins list
-        Pin newPin = new Pin()
-        {
-            Label = "New Pin",
-            Position = new Position(latitude, longitude)
-        };
-        Pins.Add(newPin);
-
-        // Add the new pin to the map control
-        MapControl mapControl = (MapControl)Content;
-        MemoryProvider layerProvider = (MemoryProvider)mapControl.Map.Layers[0];
-        layerProvider.Features.Add();
     }
 
     private void OnPinClicked(object? sender, PinClickedEventArgs e)
@@ -115,67 +151,38 @@ public partial class MapPage : ContentPage
         e.Handled = true;
     }
 
-    private static MemoryStream CreateCallbackImage(Pin pin)
-    {
-        using var paint = new SKPaint
-        {
-            Color = new SKColor((byte)10, (byte)10, (byte)10),
-            Typeface = SKTypeface.FromFamilyName(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal,
-                SKFontStyleSlant.Upright),
-            TextSize = 20
-        };
-
-        SKRect bounds;
-        using (var textPath = paint.GetTextPath(pin.Address, 0, 0))
-        {
-            // Set transform to center and enlarge clip path to window height
-            textPath.GetTightBounds(out bounds);
-        }
-
-        using var bitmap = new SKBitmap((int)(bounds.Width + 1), (int)(bounds.Height + 1));
-        using var canvas = new SKCanvas(bitmap);
-        canvas.Clear();
-        canvas.DrawText(pin.Address, -bounds.Left, -bounds.Top, paint);
-        var memStream = new MemoryStream();
-        using (var wStream = new SKManagedWStream(memStream))
-        {
-            bitmap.Encode(wStream, SKEncodedImageFormat.Png, 100);
-        }
-        return memStream;
-    }
-
     private void OnMapClicked(object sender, MapClickedEventArgs e)
     {
         mapContext.IsVisible = false;
     }
 
-    private void NewPin(object sender, EventArgs e)
-    {
-        var pins = context.UserPins.ToList();
-        foreach (var dbPin in pins)
-        {
-            var pin = new Pin()
-            {
-                Position = new Position(dbPin.Latitude, dbPin.Longitude),
-                Label = dbPin.Id.ToString(),
-                Address = dbPin.Description,
-                IsVisible = true,
-                MinVisible = 0.5,
-                Color = new Microsoft.Maui.Graphics.Color(10, 10, 60)
-            };
+    //private void NewPin(object sender, EventArgs e)
+    //{
+    //    var pins = context.UserPins.ToList();
+    //    foreach (var dbPin in pins)
+    //    {
+    //        var pin = new Pin()
+    //        {
+    //            Position = new Position(dbPin.Latitude, dbPin.Longitude),
+    //            Label = dbPin.Id.ToString(),
+    //            Address = dbPin.Description,
+    //            IsVisible = true,
+    //            MinVisible = 0.5,
+    //            Color = new Microsoft.Maui.Graphics.Color(10, 10, 60)
+    //        };
             
-            mapView.Pins.Add(pin);
-        }
-        mapView.RefreshData();
-    }
+    //        mapView.Pins.Add(pin);
+    //    }
+    //    mapView.RefreshData();
+    //}
 
-    private void View_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
-    {
-        var selectedPin = context.UserPins.Include(p=>p.Type).Where(p => p.Id == int.Parse(e.SelectedPin.Label)).FirstOrDefault();
-        nameLabel.Text = selectedPin.Name;
-        descriptionLabel.Text = selectedPin.Description;
-        additionalInfo.Text = selectedPin.Type.Name;
-    }
+    //private void View_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
+    //{
+    //    var selectedPin = context.UserPins.Include(p=>p.Type).Where(p => p.Id == int.Parse(e.SelectedPin.Label)).FirstOrDefault();
+    //    nameLabel.Text = selectedPin.Name;
+    //    descriptionLabel.Text = selectedPin.Description;
+    //    additionalInfo.Text = selectedPin.Type.Name;
+    //}
 
     [Obsolete]
     public async void StartGPS()
@@ -216,7 +223,7 @@ public partial class MapPage : ContentPage
             
         }
     }
-    private async void MyLocationPositionChanged(Location e)
+    private async void MyLocationPositionChanged(Microsoft.Maui.Devices.Sensors.Location e)
     {
         try
         {

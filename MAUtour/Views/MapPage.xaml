@@ -49,11 +49,11 @@
         </Border>
         <Border
             x:Name="mapContext"
-            IsVisible="true"
+            IsVisible="false"
             Padding="10"
             Margin="20"
-            HorizontalOptions="Center"
-            VerticalOptions="EndAndExpand"
+            VerticalOptions="End"
+            HorizontalOptions="Start"
             BackgroundColor="#D5D5D5"
             ZIndex="1">
             <Border.StrokeShape>
@@ -73,6 +73,27 @@
                 <Label FontSize="Title" x:Name = "nameLabel" Text="Наименование: "/>
                 <Label FontSize="Subtitle" x:Name = "descriptionLabel" Text="Описание: "/>
                 <Label FontSize="Subtitle" x:Name = "additionalInfo" Text="Дополнительная информация: "/>
+            </StackLayout>
+        </Border>
+        <Border
+            x:Name="roadContent"
+            IsVisible="false"
+            Padding="10"
+            Margin="20"
+            VerticalOptions="End"
+            HorizontalOptions="Start"
+            BackgroundColor="#D5D5D5"
+            ZIndex="1">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="15" />
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Radius="10"/>
+            </Border.Shadow>
+            <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                <Label FontSize="Title" x:Name = "roadLabel" Text="Включен режим создания маршрута"/>
+                <Button FontSize="Subtitle" x:Name = "disableRoadMode" Text="Закончить создание"/>
+                <Button FontSize="Subtitle" x:Name = "addRoadPin" Text="Добавить место на маршруте"/>
             </StackLayout>
         </Border>
     </Grid>

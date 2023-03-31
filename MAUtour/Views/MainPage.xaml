@@ -17,7 +17,7 @@
                     Padding="30,0">
                     <Image 
                         Source="logo.png"
-                        Aspect="AspectFill"
+                        Aspect="AspectFit"
                         HeightRequest="200"
                         WidthRequest="350"/>
                     <Label

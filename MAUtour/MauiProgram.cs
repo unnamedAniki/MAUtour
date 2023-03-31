@@ -10,7 +10,6 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
-		var context = new ApplicationContext();
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
