@@ -37,59 +37,73 @@ public partial class MapPage : ContentPage
     private CancellationTokenSource? gpsCancelation;
     private List<Coordinate> Polyline = new List<Coordinate>();
     private bool isCreatedRoad = true;
+    private ILayer roadlayer;
+    private GenericCollectionLayer<List<IFeature>> pinLayer;
     public MapPage()
     {
         InitializeComponent();
         //context = new ApplicationContext();
+    }
+
+    protected override void OnAppearing()
+    {
         mapView.Map.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer());
         mapView.Map.Layers.Add(new WritableLayer()
         {
             IsMapInfoLayer = true,
-            Name = "test"
+            Name = "test`"
         });
 
         //mapView.Map.Info += NewPin;
         //mapView.Map.Limiter.ZoomLimits = new Mapsui.UI.MinMax(1,100);
         mapView.MyLocationLayer.UpdateMyLocation(new Position(68.95997F, 33.07398F));
         FindButton.Clicked += FindButton_Clicked;
-        disableRoadMode.Clicked += DisableRoadMode_Clicked;
-        var pinLayer = new GenericCollectionLayer<List<IFeature>>
+        pinLayer = new GenericCollectionLayer<List<IFeature>>
         {
-            Style = SymbolStyles.CreatePinStyle()
+            Style = SymbolStyles.CreatePinStyle(),
+            MaxVisible = 100,
+            Name = "Pins"
         };
-        
         mapView.Map.Layers.Add(pinLayer);
-        
         mapView.Map.Info += async (s, e) =>
         {
+            disableRoadMode.Clicked += DisableRoadMode_Clicked;
             if (e.MapInfo?.WorldPosition == null) return;
             if (roadContent.IsVisible == false)
             {
-                if (!await DisplayAlert("Новая метка", "Хотите создать новый маршрут?", "Да", "Нет") && isCreatedRoad)
+                Polyline.Clear();
+                if (!await DisplayAlert("Новая метка", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
                     isCreatedRoad = false;
+                    pinLayer?.Features.Add(new GeometryFeature
+                    {
+                        Geometry = new NetTopologySuite.Geometries.Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
+                    });
+                    
+                    pinLayer?.DataHasChanged();
+                    roadContent.IsVisible = false;
                     return;
                 }
-                Polyline.Clear();
             }
             else
             {
                 Polyline.Add(new Coordinate(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y));
                 if (Polyline.Count > 1)
                 {
-                    var test = CreateLayer();
-                    mapView.Map.Layers.Add(test);
+                    roadlayer = CreateLayer();
+                    mapView.Map.Layers.Add(roadlayer);
                 }
+                else
+                {
+                    pinLayer?.Features.Add(new GeometryFeature
+                    {
+                        Geometry = new NetTopologySuite.Geometries.Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
+                    });
+                }
+                pinLayer?.DataHasChanged();
             }
             roadContent.IsVisible = true;
-            
-            pinLayer?.Features.Add(new GeometryFeature
-            {
-                Geometry = new NetTopologySuite.Geometries.Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y)
-            });
-            
-            pinLayer?.DataHasChanged();
-            
+
             return;
         };
 
@@ -112,7 +126,8 @@ public partial class MapPage : ContentPage
         return new Layer("Polygons")
         {
             DataSource = new MemoryProvider(CreatePolygon()),
-            Style = null
+            Style = null,
+            MaxVisible = 50
         };
     }
     private IFeature CreatePolygon()
@@ -170,7 +185,7 @@ public partial class MapPage : ContentPage
     //            MinVisible = 0.5,
     //            Color = new Microsoft.Maui.Graphics.Color(10, 10, 60)
     //        };
-            
+
     //        mapView.Pins.Add(pin);
     //    }
     //    mapView.RefreshData();
@@ -178,7 +193,7 @@ public partial class MapPage : ContentPage
 
     //private void View_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
     //{
-    //    var selectedPin = context.UserPins.Include(p=>p.Type).Where(p => p.Id == int.Parse(e.SelectedPin.Label)).FirstOrDefault();
+    //    var selectedPin = context.UserPins.Include(p => p.Type).Where(p => p.Id == int.Parse(e.SelectedPin.Label)).FirstOrDefault();
     //    nameLabel.Text = selectedPin.Name;
     //    descriptionLabel.Text = selectedPin.Description;
     //    additionalInfo.Text = selectedPin.Type.Name;

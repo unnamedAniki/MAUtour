@@ -10,6 +10,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAUtour", "MAUtour\MAUtour.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAUtour.Utils", "MAUtour.Utils\MAUtour.Utils.csproj", "{B7246533-EAAB-4F35-B5A8-182AE0C895C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUTour.Web", "MAUTour.Web\MAUTour.Web.csproj", "{B6AF9F10-EA57-4152-B2F8-8F4D3E8E9EF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAUtour.API", "MAUtour.API\MAUtour.API.csproj", "{0AE5145A-FDF0-4177-86A7-323C37BFF7F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7246533-EAAB-4F35-B5A8-182AE0C895C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6AF9F10-EA57-4152-B2F8-8F4D3E8E9EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6AF9F10-EA57-4152-B2F8-8F4D3E8E9EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6AF9F10-EA57-4152-B2F8-8F4D3E8E9EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6AF9F10-EA57-4152-B2F8-8F4D3E8E9EF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AE5145A-FDF0-4177-86A7-323C37BFF7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AE5145A-FDF0-4177-86A7-323C37BFF7F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AE5145A-FDF0-4177-86A7-323C37BFF7F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AE5145A-FDF0-4177-86A7-323C37BFF7F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

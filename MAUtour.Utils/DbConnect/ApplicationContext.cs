@@ -28,7 +28,7 @@ namespace MAUtour.Utils.DbConnect
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlite("Data source=test.db");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=usersdb;Username=postgres;Password=postgres");
         }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
