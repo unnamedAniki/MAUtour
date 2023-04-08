@@ -18,8 +18,4 @@
     <ProjectReference Include="..\MAUtour.Utils\MAUtour.Utils.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mappings\" />
-  </ItemGroup>
-
 </Project>

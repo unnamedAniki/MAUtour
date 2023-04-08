@@ -1,8 +1,11 @@
 using Mapster;
 using MAUtour.Utils.DbConnect;
 
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
 
+TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

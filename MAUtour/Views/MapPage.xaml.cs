@@ -42,7 +42,7 @@ public partial class MapPage : ContentPage
     public MapPage()
     {
         InitializeComponent();
-        //context = new ApplicationContext();
+
     }
 
     protected override void OnAppearing()

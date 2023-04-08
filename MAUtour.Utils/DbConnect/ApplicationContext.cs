@@ -74,6 +74,8 @@ namespace MAUtour.Utils.DbConnect
                 .HasForeignKey(p => p.PinId);
 
             modelBuilder.Entity<Users>().HasData(TestUserData.CreateUserData());
+            modelBuilder.Entity<Roles>().HasData(TestRolesData.CreateRolesData());
+            modelBuilder.Entity<UserRoles>().HasData(TestRolesData.CreateUserRolesData());
             modelBuilder.Entity<TypeOfPins>().HasData(TestPinsData.CreatePinTypes());
             modelBuilder.Entity<TypeOfRoutes>().HasData(TestRoutesData.CreateRouteTypes());
             modelBuilder.Entity<UserPins>().HasData(TestPinsData.CreatePinsData());
