@@ -8,6 +8,9 @@ namespace MAUtour;
 
 public static class MauiProgram
 {
+	private static readonly string host = "localhost";
+	private static readonly string port = "5014";
+	static string ApiUrl = $"http://{host}:{port}/GPS/"; 
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
