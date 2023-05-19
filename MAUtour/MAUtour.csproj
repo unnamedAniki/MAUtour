@@ -52,8 +52,8 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.0.0" />
 		<PackageReference Include="Itinero" Version="1.6.0-pre036" />
-		<PackageReference Include="Mapsui" Version="4.0.0-beta.8" />
-		<PackageReference Include="Mapsui.Maui" Version="4.0.0-beta.8" />
+		<PackageReference Include="Mapsui" Version="4.0.0-beta.11" />
+		<PackageReference Include="Mapsui.Maui" Version="4.0.0-beta.11" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 	</ItemGroup>
 
