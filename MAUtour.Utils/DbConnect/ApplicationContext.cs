@@ -3,8 +3,6 @@ using MAUtour.Utils.Models;
 
 using Microsoft.EntityFrameworkCore;
 
-using System.Reflection.Emit;
-
 namespace MAUtour.Utils.DbConnect
 {
     public class ApplicationContext : DbContext

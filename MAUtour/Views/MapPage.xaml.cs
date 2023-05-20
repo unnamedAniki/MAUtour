@@ -25,6 +25,9 @@ using Polyline = Mapsui.UI.Maui.Polyline;
 using Point = NetTopologySuite.Geometries.Point;
 using Position = Mapsui.UI.Maui.Position;
 using Style = Mapsui.Styles.Style;
+using Easing = Mapsui.Animations.Easing;
+using Mapsui.Rendering.Skia;
+using System.Reflection;
 
 namespace MAUtour;
 
@@ -43,9 +46,13 @@ public partial class MapPage : ContentPage
 
     protected override void OnAppearing()
     {
+        string roadName = null;
+        string roadDescription = null;
         mapView.Map.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer());
         mapView.Map.Layers.Add(CreatePinsLayer());
         var murmanskBounds = GetLimitsOfMurmansk();
+        mapView.IsNorthingButtonVisible = false;
+        mapView.IsZoomButtonVisible = false;
         mapView.Map.Navigator.Limiter = new ViewportLimiterKeepWithinExtent();
         mapView.Map.Navigator.RotationLock = true;
         mapView.Map.Navigator.OverridePanBounds = murmanskBounds;
@@ -53,211 +60,360 @@ public partial class MapPage : ContentPage
         mapView.MyLocationLayer.UpdateMyLocation(new Position(68.95997F, 33.07398F));
         FindButton.Clicked += FindButton_Clicked;
         disableRoadMode.Clicked += DisableRoadMode_Clicked;
+        mapView.MapClicked += OnMapClicked;
+        mapView.PinClicked += OnPinClicked;
+        Coordinate _coords = new();
+        GeometryFeature tempPin = new();
+        addRoadPin.Clicked += (s, e) =>
+        {
+            pinsContext.IsVisible = true;
+        };
+
+        pinList.ItemSelected += (s, e) =>
+        {
+            if (_coords != null)
+            {
+                pinsLayer.Features.Remove(tempPin);
+            }
+            _coords = (Coordinate)e.SelectedItem;
+            tempPin.Geometry = new Point(_coords.X, _coords.Y);
+            tempPin.Styles = new Style[]
+            {
+                SymbolStyles.CreatePinStyle()
+            };
+            pinsLayer.Features.Add(tempPin);
+            pinsLayer.DataHasChanged();
+        };
+
+        addPinButton.Clicked += (s, e) =>
+        {
+            pinsLayer.Features.Remove(tempPin);
+            AddPin(_coords);
+            pinsContext.IsVisible = false;
+        };
+        
         CloseButton.Clicked += (s, e) =>
         {
             pinsContext.IsVisible = false;
         };
+        
         pinsLayer = new GenericCollectionLayer<List<IFeature>>
         {
             IsMapInfoLayer = true,
+            MaxVisible = 100,
             Name = "Pin"
         };
+        
         roadlayer = new GenericCollectionLayer<List<IFeature>>
         {
             IsMapInfoLayer = true,
+            MaxVisible = 50,
             Name = "Roads"
         };
+
         mapView.Map.Layers.Add(roadlayer);
         mapView.Map.Layers.Add(pinsLayer);
-        string roadName = null;
-        string pinName = null;
         mapView.Map.Info += async (s, e) =>
         {
+            if (e.MapInfo?.WorldPosition == null) return;
+
             var vectorStyle = e.MapInfo?.Feature?.Styles.Where(s => s is CalloutStyle).Cast<CalloutStyle>().FirstOrDefault();
-            if (vectorStyle != null && e.MapInfo?.Layer?.Name == "Roads")
+            if (vectorStyle != null)
             {
                 vectorStyle.Enabled = !vectorStyle.Enabled;
                 e.MapInfo?.Layer?.DataHasChanged();
                 return;
             }
-            var pinStyle = e.MapInfo?.Feature?.Styles.Where(s => s is CalloutStyle).Cast<CalloutStyle>().FirstOrDefault();
-            if (pinStyle != null && e.MapInfo?.Layer?.Name == "Pin")
-            {
-                pinStyle.Enabled = !pinStyle.Enabled;
-                e.MapInfo.Layer?.DataHasChanged();
-                return;
-            }
-            if (e.MapInfo?.WorldPosition == null) return;
+
             if (roadContent.IsVisible == false)
             {
                 Polyline.Clear();
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
-                    if(pinName == null)
-                    {
-                        pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
-                    }
-                    var callbackImage = CreateCallbackImage(pinName);
-                    var bitmapId = BitmapRegistry.Instance.Register(callbackImage);
-                    var calloutStyle = CreateCalloutStyle(bitmapId);
-                    pinsLayer.Features.Add(new GeometryFeature
-                    {
-                        Geometry = new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
-                        Styles = new Style[]
-                        {
-                            SymbolStyles.CreatePinStyle(),
-                            calloutStyle
-                        },
-                    });
-                    pinsLayer.DataHasChanged();
-                    roadContent.IsVisible = false;
+                    await AddPin(e);
                     return;
                 }
                 else
                 {
-                    roadName = await DisplayPromptAsync("Новый маршрут", "Введите наименование маршрута", "Добавить", "Отмена", "Название...");
+                    roadName = await DisplayPromptAsync("Новый маршрут", "Введите наименование маршрута", "Добавить", "Отмена", "Название...", 20);
+                    if(roadName == null)
+                    {
+                        return;
+                    }
+                    roadDescription = await DisplayPromptAsync("Новый маршрут", "Введите описание маршрута", "Добавить", "Отмена", "Описание...", 20);
+                    if (roadName == null)
+                    {
+                        return;
+                    }
+                    roadContent.IsVisible = true;
                 }
             }
             else
             {
                 Polyline.Add(new Coordinate(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y));
-
-                addRoadPin.Clicked += (s, e) =>
-                {
-                    pinsContext.IsVisible = true;
-                    pinList.ItemsSource = Polyline;
-                    pinList.ItemSelected += async (s, e) =>
-                    {
-                        var coords = (Coordinate)e.SelectedItem;
-                        var text = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
-                        var callbackImage = CreateCallbackImage(text);
-                        var bitmapId = BitmapRegistry.Instance.Register(callbackImage);
-                        var calloutStyle = CreateCalloutStyle(bitmapId);
-                        pinsLayer.Features.Add(new GeometryFeature
-                        {
-                            Geometry = new Point(coords.X, coords.Y),
-                            Styles = new Style[]
-                            {
-                                SymbolStyles.CreatePinStyle(),
-                                calloutStyle
-                            },
-                        });
-                        pinsLayer.DataHasChanged();
-                    };
-                };
                 if (Polyline.Count > 1)
                 {
-                    roadlayer.Features.Add(new GeometryFeature
-                    {
-                        Styles = new Style[]
-                        {
-                             new VectorStyle
-                             {
-                                Line = new Pen(Color.Gray, 10) { PenStrokeCap = PenStrokeCap.Butt, StrokeJoin = StrokeJoin.Miter }
-                             },
-                             new CalloutStyle
-                             {
-                                Title = roadName,
-                                TitleFont = { FontFamily = null, Size = 12, Italic = false, Bold = true },
-                                TitleFontColor = Color.Gray,
-                                MaxWidth = 120,
-                                RectRadius = 10,
-                                RotateWithMap = true,
-                                ShadowWidth = 4,
-                                Enabled = false,
-                                SymbolOffset = new Offset(0, SymbolStyle.DefaultHeight * 1f)
-                             }
-                        },
-                        Geometry = new LineString(Polyline.ToArray()),
-                    });
-                    roadlayer.DataHasChanged();
+                    pinList.ItemsSource = Polyline.Skip(1);
+                    AddRoad(roadName);
                 }
                 else
                 {
-                    var text = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
-                    var callbackImage = CreateCallbackImage(text);
-                    var bitmapId = BitmapRegistry.Instance.Register(callbackImage);
-                    var calloutStyle = CreateCalloutStyle(bitmapId);
-                    pinsLayer.Features.Add(new GeometryFeature
-                    {
-                        Geometry = new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
-                        Styles = new Style[]
-                        {
-                             SymbolStyles.CreatePinStyle(),
-                             calloutStyle
-                        },
-                    });
-                    pinsLayer.DataHasChanged();
+                    AddStartPin(roadName, roadDescription, e);
                 }
             }
             roadName = null;
-            roadContent.IsVisible = true;
             return;
         };
-        mapView.IsNorthingButtonVisible = false;
-        mapView.IsZoomButtonVisible = false;
-        //mapView.SelectedPinChanged += View_SelectedPinChanged;
-        mapView.MapClicked += OnMapClicked;
-        mapView.PinClicked += OnPinClicked;
         StartGPS();
     }
 
-    private static Style CreateCalloutStyle(int bitmapId)
+    private void AddRoad(string roadName)
     {
-        var rand = new Random();
-        var calloutStyle = new CalloutStyle { Content = bitmapId, ArrowPosition = rand.Next(1, 9) * 0.1f, RotateWithMap = true, Type = CalloutType.Custom };
-        switch (rand.Next(0, 4))
+        roadlayer.Features.Add(new GeometryFeature
         {
-            case 0:
-                calloutStyle.ArrowAlignment = ArrowAlignment.Bottom;
-                calloutStyle.Offset = new Offset(0, SymbolStyle.DefaultHeight * 0.5f);
+            Styles = new Style[]
+            {
+                new VectorStyle
+                {
+                    Line = new Pen(Color.Gray, 10) { PenStrokeCap = PenStrokeCap.Butt, StrokeJoin = StrokeJoin.Miter }
+                },
+                new CalloutStyle
+                {
+                    Title = roadName,
+                    TitleFont = { FontFamily = null, Size = 12, Italic = false, Bold = true },
+                    TitleFontColor = Color.Gray,
+                    MaxWidth = 120,
+                    RectRadius = 10,
+                    RotateWithMap = true,
+                    ShadowWidth = 4,
+                    Enabled = false,
+                    SymbolOffset = new Offset(0, SymbolStyle.DefaultHeight * 1f)
+                }
+            },
+            Geometry = new LineString(Polyline.ToArray()),
+        });
+        roadlayer.DataHasChanged();
+    }
+
+    private async void AddStartPin(string name, string description, MapInfoEventArgs e)
+    {
+        await Task.Run(() =>
+        {
+            var _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.default-pin.png");
+            string imagePath = "MAUtour.Resources.Images.default-image.jpg";
+            Assembly assembly = GetType().GetTypeInfo().Assembly;
+            var featureBitmapId = BitmapRegistry.Instance.Register(new Sprite(_atlasBitmapId, 0, 0, 21, 21, 1));
+            SKBitmap resourceBitmap;
+            using (Stream stream = assembly.GetManifestResourceStream(imagePath))
+            {
+                resourceBitmap = SKBitmap.Decode(stream);
+            }
+            var callbackImage = CreateCallbackImage(name, description, resourceBitmap);
+            var imageId = BitmapRegistry.Instance.Register(callbackImage);
+            var calloutStyle = CreateImageCalloutStyle(imageId);
+            pinsLayer.Features.Add(new GeometryFeature
+            {
+                Geometry = new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
+                Styles = new Style[]
+                {
+                    new SymbolStyle { BitmapId = featureBitmapId },
+                    calloutStyle
+                },
+            });
+            pinsLayer.DataHasChanged();
+        });
+    }
+
+    private async void AddPin(Coordinate e)
+    {
+        var pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
+        var description = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...");
+        if (pinName == null)
+            return;
+        var typeofPin = await DisplayActionSheet("Выберите тип метки", "Отмена", "Обычный",
+            buttons: new string[] { "Трасса", "Кемпинг", "Опасный участок", "Животные", "Красивое место" });
+        if (typeofPin == null)
+            return;
+        await Task.Run(() =>
+        {
+            int _atlasBitmapId = 0;
+            string imagePath = "MAUtour.";
+            Assembly assembly = GetType().GetTypeInfo().Assembly;
+            switch (typeofPin)
+            {
+                case "Трасса":
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.race-pin.png");
+                    imagePath += "Resources.Images.race-image.jpg";
+                    break;
+                case "Кемпинг":
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.green-pin.png");
+                    imagePath += "Resources.Images.green-image.jpg";
+                    break;
+                case "Опасный участок":
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.danger-pin.png");
+                    imagePath += "Resources.Images.danger-image.png";
+                    break;
+                case "Животные":
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.animal-pin.png");
+                    imagePath += "Resources.Images.animal-image.png";
+                    break;
+                case "Красивое место":
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.landscape-pin.png");
+                    imagePath += "Resources.Images.landscape-image.png";
+                    break;
+                default:
+                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.default-pin.png");
+                    imagePath += "Resources.Images.default-image.jpg";
+                    break;
+            }
+            var featureBitmapId = BitmapRegistry.Instance.Register(new Sprite(_atlasBitmapId, 0, 0, 21, 21, 1));
+            SKBitmap resourceBitmap;
+            using (Stream stream = assembly.GetManifestResourceStream(imagePath))
+            {
+                resourceBitmap = SKBitmap.Decode(stream);
+            }
+            var callbackImage = CreateCallbackImage(pinName, description, resourceBitmap);
+            var imageId = BitmapRegistry.Instance.Register(callbackImage);
+            var calloutStyle = CreateImageCalloutStyle(imageId);
+
+            pinsLayer.Features.Add(new GeometryFeature
+            {
+                Geometry = new Point(e.X, e.Y),
+                Styles = new Style[]
+                {
+                    new SymbolStyle { BitmapId = featureBitmapId },
+                    calloutStyle
+                },
+            });
+            pinsLayer.DataHasChanged();
+        });
+    }
+
+    private async Task<string> AddPin(MapInfoEventArgs e)
+    {
+        var pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...", maxLength: 20);
+        var description = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...", maxLength: 20);
+        if (pinName == null)
+            return null;
+        var typeofPin = await DisplayActionSheet("Выберите тип метки", "Отмена", "Обычный",
+            buttons: new string[] { "Трасса", "Кемпинг", "Опасный участок", "Животные", "Красивое место" });
+        if (typeofPin == null)
+            return null;
+        int _atlasBitmapId = 0;
+        string imagePath = "MAUtour.";
+        Assembly assembly = GetType().GetTypeInfo().Assembly;
+        switch (typeofPin)
+        {
+            case "Трасса":
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.race-pin.png");
+                imagePath += "Resources.Images.race-image.jpg";
                 break;
-            case 1:
-                calloutStyle.ArrowAlignment = ArrowAlignment.Left;
-                calloutStyle.Offset = new Offset(SymbolStyle.DefaultHeight * 0.5f, 0);
+            case "Кемпинг":
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.green-pin.png");
+                imagePath += "Resources.Images.green-image.jpg";
                 break;
-            case 2:
-                calloutStyle.ArrowAlignment = ArrowAlignment.Top;
-                calloutStyle.Offset = new Offset(0, -SymbolStyle.DefaultHeight * 0.5f);
+            case "Опасный участок":
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.danger-pin.png");
+                imagePath += "Resources.Images.danger-image.png";
                 break;
-            case 3:
-                calloutStyle.ArrowAlignment = ArrowAlignment.Right;
-                calloutStyle.Offset = new Offset(-SymbolStyle.DefaultHeight * 0.5f, 0);
+            case "Животные":
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.animal-pin.png");
+                imagePath += "Resources.Images.animal-image.png";
+                break;
+            case "Красивое место":
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.landscape-pin.png");
+                imagePath += "Resources.Images.landscape-image.png";
+                break;
+            default:
+                _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.default-pin.png");
+                imagePath += "Resources.Images.default-image.jpg";
                 break;
         }
-        calloutStyle.RectRadius = 10; // Random.Next(0, 9);
-        calloutStyle.ShadowWidth = 4; // Random.Next(0, 9);
-        calloutStyle.StrokeWidth = 0;
-        calloutStyle.Enabled = false;
+        var featureBitmapId = BitmapRegistry.Instance.Register(new Sprite(_atlasBitmapId, 0, 0, 21, 21, 1));
+        SKBitmap resourceBitmap;
+        var test = assembly.GetManifestResourceNames();
+        using (Stream stream = assembly.GetManifestResourceStream(imagePath))
+        {
+            resourceBitmap = SKBitmap.Decode(stream);
+        }
+        var callbackImage = CreateCallbackImage(pinName, description, resourceBitmap);
+        var imageId = BitmapRegistry.Instance.Register(callbackImage);
+        var calloutStyle = CreateImageCalloutStyle(imageId);
+
+        pinsLayer.Features.Add(new GeometryFeature
+        {
+            Geometry = new Point(e.MapInfo.WorldPosition.X, e.MapInfo.WorldPosition.Y),
+            Styles = new Style[]
+            {
+                new SymbolStyle { BitmapId = featureBitmapId },
+                calloutStyle
+            },
+        });
+        pinsLayer.DataHasChanged();
+        return pinName;
+    }
+
+    private static Style CreateCalloutStyle(string content, int bitmapId)
+    {
+        var calloutStyle = new CalloutStyle {
+            Content = bitmapId,
+            TitleFont = { FontFamily = null, Size = 12, Italic = false, Bold = true },
+            TitleFontColor = Color.Gray,
+            MaxWidth = 120,
+            MaxVisible = 100,
+            RectRadius = 10,
+            ShadowWidth = 4,
+            Enabled = false,
+            Type = CalloutType.Custom,
+            SymbolOffset = new Offset(0, SymbolStyle.DefaultHeight * 1f)
+        };
         return calloutStyle;
     }
 
-    private MemoryStream CreateCallbackImage(string city)
+    private static Style CreateImageCalloutStyle(int bitmapId)
     {
-        var rand = new Random();
+        var calloutStyle = new CalloutStyle
+        {
+            Content = bitmapId,
+            RotateWithMap = true,
+            ArrowPosition = 4,
+            Type = CalloutType.Custom
+        }; 
+        calloutStyle.ArrowAlignment = ArrowAlignment.Top;
+        calloutStyle.Offset = new Offset(0, -SymbolStyle.DefaultHeight * 0.5f);
+        calloutStyle.RectRadius = 10;   
+        calloutStyle.ShadowWidth = 4; 
+        calloutStyle.StrokeWidth = 0;
+        return calloutStyle;
+    }
+
+    private MemoryStream CreateCallbackImage(string name, string description, SKBitmap image)
+    {
+        using var textPaint = new SKPaint
+        {
+            Color = new SKColor(0, 0, 0),
+            Typeface = SKTypeface.FromFamilyName(null, SKFontStyleWeight.Light, SKFontStyleWidth.SemiExpanded,
+                SKFontStyleSlant.Upright),
+            TextSize = 18
+        };
         using var paint = new SKPaint
         {
-            Color = new SKColor((byte)rand.Next(0, 256), (byte)rand.Next(0, 256), (byte)rand.Next(0, 256)),
-            Typeface = SKTypeface.FromFamilyName(null, SKFontStyleWeight.Bold, SKFontStyleWidth.Normal,
-                SKFontStyleSlant.Upright),
-            TextSize = 20
+            Color = new SKColor(255, 255, 255)
         };
-
+        image = image.Resize(new SKSizeI(300, 200), SKFilterQuality.High);
         SKRect bounds;
-        using (var textPath = paint.GetTextPath(city, 0, 0))
+        using (var textPath = textPaint.GetTextPath("Test: Cool place for me", 0, 0))
         {
-            // Set transform to center and enlarge clip path to window height
             textPath.GetTightBounds(out bounds);
         }
-
-        using var bitmap = new SKBitmap((int)(bounds.Width + 1), (int)(bounds.Height + 1));
-        using var canvas = new SKCanvas(bitmap);
-        canvas.Clear();
-        canvas.DrawText(city, -bounds.Left, -bounds.Top, paint);
+        using var canvas = new SKCanvas(image);
+        canvas.DrawRegion(new SKRegion(new SKRectI(0, image.Height-48, image.Width, image.Width-48)), paint);
+        canvas.DrawText($"Наименование: {name}", -bounds.Left, -bounds.Top + 156, textPaint);
+        canvas.DrawText($"Описание: {description}", -bounds.Left, -bounds.Top + 178, textPaint);
         var memStream = new MemoryStream();
         using (var wStream = new SKManagedWStream(memStream))
         {
-            bitmap.Encode(wStream, SKEncodedImageFormat.Png, 100);
+            image.Encode(wStream, SKEncodedImageFormat.Png, 100);
         }
         return memStream;
     }
@@ -308,34 +464,6 @@ public partial class MapPage : ContentPage
     {
         mapContext.IsVisible = false;
     }
-
-    //private void NewPin(object sender, EventArgs e)
-    //{
-    //    var pins = context.UserPins.ToList();
-    //    foreach (var dbPin in pins)
-    //    {
-    //        var pin = new Pin()
-    //        {
-    //            Position = new Position(dbPin.Latitude, dbPin.Longitude),
-    //            Label = dbPin.Id.ToString(),
-    //            Address = dbPin.Description,
-    //            IsVisible = true,
-    //            MinVisible = 0.5,
-    //            Color = new Microsoft.Maui.Graphics.Color(10, 10, 60)
-    //        };
-
-    //        mapView.Pins.Add(pin);
-    //    }
-    //    mapView.RefreshData();
-    //}
-
-    //private void View_SelectedPinChanged(object sender, SelectedPinChangedEventArgs e)
-    //{
-    //    var selectedPin = context.UserPins.Include(p => p.Type).Where(p => p.Id == int.Parse(e.SelectedPin.Label)).FirstOrDefault();
-    //    nameLabel.Text = selectedPin.Name;
-    //    descriptionLabel.Text = selectedPin.Description;
-    //    additionalInfo.Text = selectedPin.Type.Name;
-    //}
 
     [Obsolete]
     public async void StartGPS()

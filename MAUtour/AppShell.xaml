@@ -6,17 +6,21 @@
     xmlns:local="clr-namespace:MAUtour"
     Shell.FlyoutBehavior="Flyout">
     <Shell.FlyoutHeader>
-        <Label Text="Image"/>
+        <Image 
+            Source="logo.png"
+            Aspect="AspectFit"
+            HeightRequest="200"
+            WidthRequest="250"/>
     </Shell.FlyoutHeader>
-    
-    <ShellContent
-        Title="Главная"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+
     <ShellContent
         Title="Карта"
         ContentTemplate="{DataTemplate local:MapPage}"
         Route="MapPage" />
+    <ShellContent
+        Title="Авторизация"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
     <ShellContent
         Title="Метки"
         ContentTemplate="{DataTemplate local:MarksPage}"
@@ -25,8 +29,4 @@
         Title="Маршруты"
         ContentTemplate="{DataTemplate local:RoutesPage}"
         Route="RoutesPage" />
-
-    <Shell.FlyoutFooter>
-        <Label Text="User"/>
-    </Shell.FlyoutFooter>
 </Shell>

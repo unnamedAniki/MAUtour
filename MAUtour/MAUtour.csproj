@@ -50,6 +50,43 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Remove="Resources\Images\animal-image.png" />
+	  <MauiImage Remove="Resources\Images\animal-pin.png" />
+	  <MauiImage Remove="Resources\Images\camping-image.jpg" />
+	  <MauiImage Remove="Resources\Images\danger-image.png" />
+	  <MauiImage Remove="Resources\Images\danger-pin.png" />
+	  <MauiImage Remove="Resources\Images\default-image.jpg" />
+	  <MauiImage Remove="Resources\Images\default-pin.png" />
+	  <MauiImage Remove="Resources\Images\green-image.jpg" />
+	  <MauiImage Remove="Resources\Images\green-pin.png" />
+	  <MauiImage Remove="Resources\Images\landscape-image.png" />
+	  <MauiImage Remove="Resources\Images\landscape-pin.png" />
+	  <MauiImage Remove="Resources\Images\osm-liberty.png" />
+	  <MauiImage Remove="Resources\Images\race-image.jpg" />
+	  <MauiImage Remove="Resources\Images\race-pin.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\osm-liberty.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Images\animal-image.png" />
+	  <EmbeddedResource Include="Resources\Images\animal-pin.png" />
+	  <EmbeddedResource Include="Resources\Images\danger-image.png" />
+	  <EmbeddedResource Include="Resources\Images\danger-pin.png" />
+	  <EmbeddedResource Include="Resources\Images\default-image.jpg" />
+	  <EmbeddedResource Include="Resources\Images\default-pin.png" />
+	  <EmbeddedResource Include="Resources\Images\green-image.jpg" />
+	  <EmbeddedResource Include="Resources\Images\green-pin.png" />
+	  <EmbeddedResource Include="Resources\Images\landscape-image.png" />
+	  <EmbeddedResource Include="Resources\Images\landscape-pin.png" />
+	  <EmbeddedResource Include="Resources\Images\osm-liberty.png" />
+	  <EmbeddedResource Include="Resources\Images\race-image.jpg" />
+	  <EmbeddedResource Include="Resources\Images\race-pin.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui.Markup" Version="3.0.0" />
 		<PackageReference Include="Itinero" Version="1.6.0-pre036" />
 		<PackageReference Include="Mapsui" Version="4.0.0-beta.11" />

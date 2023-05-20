@@ -53,39 +53,29 @@
             VerticalOptions="Start"
             HorizontalOptions="Start"
             IsVisible="false"
-            BackgroundColor="#D5D5D5">
+            BackgroundColor="{StaticResource Primary}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="5" />
             </Border.StrokeShape>
             <Border.Shadow>
                 <Shadow Brush="Black" Radius="3"/>
             </Border.Shadow>
-            <VerticalStackLayout WidthRequest="200">
-                <ListView x:Name="pinList">
+            <StackLayout WidthRequest="250" HeightRequest="200">
+                <ListView x:Name="pinList"
+                          Margin="10">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
-                                <Grid BackgroundColor="LightGray">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackLayout Grid.Column="1">
-                                        <Label
-                                            Margin="0,0,0,5"
-                                            Text="{Binding X}"
-                                            FontAttributes="Bold" />
-                                        <Label
-                                            Margin="5,0,0,0"
-                                            Text="{Binding Y}"
-                                            FontAttributes="Bold" />
-                                    </StackLayout>
-                                </Grid>
-                            </ViewCell>
+                            <TextCell 
+                                Text="{Binding X}"
+                                Detail="{Binding Y}"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button x:Name="CloseButton" Text="Закрыть" FontSize="Small"/>
-            </VerticalStackLayout>
+                <HorizontalStackLayout Margin="10">
+                    <Button x:Name="addPinButton" Text="Добавить" FontSize="Small"/>
+                    <Button x:Name="CloseButton" Text="Закрыть" FontSize="Small"/>
+                </HorizontalStackLayout>
+            </StackLayout>
         </Border>
         <Border
             x:Name="mapContext"
