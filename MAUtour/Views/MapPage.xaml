@@ -35,6 +35,44 @@
             </StackLayout>
         </Border>
         <Border
+            ZIndex="1"
+            Margin="15"
+            VerticalOptions="End"
+            HorizontalOptions="Center"
+            IsVisible="false"
+            BackgroundColor="#D5D5D5"
+            WidthRequest="400"
+            x:Name="MoreInfoPanel">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <ScrollView>
+                <VerticalStackLayout Margin="10">
+                    <Button BackgroundColor="#D5D5D5" x:Name="ShowMoreButton" Text="Показать больше" FontSize="Small"/>
+                    <Button BackgroundColor="#D5D5D5" x:Name="HideInfoButton" Text="Скрыть" FontSize="Small" IsVisible="false"/>
+                    <Label Text = "Информация:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                    <Label x:Name = "PinName" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Label x:Name = "PinDescription" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Label Text = "Фотографии места" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                    <CarouselView
+                        x:Name="CarouselImages"
+                        ItemsSource="{Binding images}">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Margin="0, 5, 5, 0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5" />
+                                    </Border.StrokeShape>
+                                    <Image Source="{Binding source}" Aspect="AspectFill" WidthRequest="350" HeightRequest="225"/>
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>  
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+        <Border
             Margin="10"
             HorizontalOptions="FillAndExpand">
             <Border.StrokeShape>
