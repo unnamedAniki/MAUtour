@@ -28,6 +28,7 @@ using Style = Mapsui.Styles.Style;
 using Easing = Mapsui.Animations.Easing;
 using Mapsui.Rendering.Skia;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace MAUtour;
 
@@ -40,6 +41,9 @@ public partial class MapPage : ContentPage
     private GenericCollectionLayer<List<IFeature>> pinsLayer;
     private GenericCollectionLayer<List<IFeature>> roadlayer;
     private List<Sources> images = new List<Sources>();
+    private string pinName = null;
+    private string pinDescription = null;
+
     public MapPage()
     {
         InitializeComponent();
@@ -173,6 +177,8 @@ public partial class MapPage : ContentPage
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
                     await AddPin(e);
+                    PinName.Text = "Наименование: " + pinName;
+                    PinDescription.Text = "Описание: " + pinDescription;
                     return;
                 }
                 else
@@ -200,6 +206,8 @@ public partial class MapPage : ContentPage
                 }
                 else
                 {
+                    PinName.Text = "Наименование: " + roadName;
+                    PinDescription.Text = "Описание: " + roadDescription;
                     AddStartPin(roadName, roadDescription, e);
                 }
             }
@@ -267,8 +275,8 @@ public partial class MapPage : ContentPage
 
     private async void AddPin(Coordinate e)
     {
-        var pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
-        var description = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...");
+        pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
+        pinDescription = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...");
         if (pinName == null)
             return;
         var typeofPin = await DisplayActionSheet("Выберите тип метки", "Отмена", "Обычный",
@@ -313,7 +321,7 @@ public partial class MapPage : ContentPage
             {
                 resourceBitmap = SKBitmap.Decode(stream);
             }
-            var callbackImage = CreateCallbackImage(pinName, description, resourceBitmap);
+            var callbackImage = CreateCallbackImage(pinName, pinDescription, resourceBitmap);
             var imageId = BitmapRegistry.Instance.Register(callbackImage);
             var calloutStyle = CreateImageCalloutStyle(imageId);
             pinsLayer.Features.Add(new GeometryFeature
@@ -331,11 +339,11 @@ public partial class MapPage : ContentPage
 
     private async Task<string> AddPin(MapInfoEventArgs e)
     {
-        var pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...", maxLength: 20);
+        pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...", maxLength: 20);
         if (pinName == null)
             return null;
-        var description = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...", maxLength: 20);
-        if (description == null)
+        pinDescription = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...", maxLength: 20);
+        if (pinDescription == null)
             return null;
         var typeofPin = await DisplayActionSheet("Выберите тип метки", "Отмена", "Обычный",
             buttons: new string[] { "Трасса", "Кемпинг", "Опасный участок", "Животные", "Красивое место" });
@@ -377,7 +385,7 @@ public partial class MapPage : ContentPage
         {
             resourceBitmap = SKBitmap.Decode(stream);
         }
-        var callbackImage = CreateCallbackImage(pinName, description, resourceBitmap);
+        var callbackImage = CreateCallbackImage(pinName, pinDescription, resourceBitmap);
         var imageId = BitmapRegistry.Instance.Register(callbackImage);
         var calloutStyle = CreateImageCalloutStyle(imageId);
         pinsLayer.Features.Add(new GeometryFeature
@@ -413,8 +421,6 @@ public partial class MapPage : ContentPage
 
     private MemoryStream CreateCallbackImage(string name, string description, SKBitmap image)
     {
-        PinName.Text = "Наименование: " + name;
-        PinDescription.Text = "Описание: " + description;
         using var textPaint = new SKPaint
         {
             Color = new SKColor(0, 0, 0),

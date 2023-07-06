@@ -2,8 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUtour.MapPage"
+             xmlns:local="clr-namespace:MAUtour.ViewModels"
              xmlns:mapsui ="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
              Title="Карта">
+    <ContentPage.BindingContext>
+        <local:MapViewModel />
+    </ContentPage.BindingContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -26,10 +30,12 @@
                 Orientation="Horizontal">
                 <Button x:Name="FindButton" Text="Поиск" FontSize="Small"/>
                 <Entry
-                    VerticalOptions="FillAndExpand"
-                    HorizontalOptions="FillAndExpand"
+                    FontSize="Small"
+                    VerticalOptions="CenterAndExpand"
+                    HorizontalOptions="CenterAndExpand"
                     x:Name="searchLabel"
-                    Placeholder="Введите текст для поиска"
+                    Text="{Binding SearchText}"
+                    Placeholder="{Binding SearchPlaceholder}"
                     TextColor="{StaticResource Primary}"
                     IsVisible="false"/>
             </StackLayout>
@@ -48,11 +54,11 @@
             </Border.StrokeShape>
             <ScrollView>
                 <VerticalStackLayout Margin="10">
-                    <Button BackgroundColor="#D5D5D5" x:Name="ShowMoreButton" Text="Показать больше" FontSize="Small"/>
-                    <Button BackgroundColor="#D5D5D5" x:Name="HideInfoButton" Text="Скрыть" FontSize="Small" IsVisible="false"/>
-                    <Label Text = "Информация:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
-                    <Label x:Name = "PinName" FontSize="Medium" TextColor="{StaticResource Primary}"/>
-                    <Label x:Name = "PinDescription" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Button BackgroundColor="#D5D5D5" Command="{Binding }" Text="{Binding ShowButtonName}" FontSize="Small"/>
+                    <Button BackgroundColor="#D5D5D5" Text="{Binding HideButtonName}" FontSize="Small" IsVisible="false"/>
+                    <Label Text = "{Binding PinInfo}" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                    <Label x:Name = "PinName" Text="{Binding PinName}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Label x:Name = "PinDescription" Text ="{Binding PinDescription}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
                     <Label Text = "Фотографии места" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                     <CarouselView
                         x:Name="CarouselImages"
@@ -110,7 +116,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <HorizontalStackLayout Margin="10">
-                    <Button x:Name="addPinButton" Text="Добавить" FontSize="Small"/>
+                    <Button x:Name="addPinButton" Text="{Binding }" FontSize="Small"/>
                     <Button x:Name="CloseButton" Text="Закрыть" FontSize="Small"/>
                 </HorizontalStackLayout>
             </StackLayout>

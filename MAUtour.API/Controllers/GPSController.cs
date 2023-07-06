@@ -8,87 +8,40 @@ using Newtonsoft.Json.Linq;
 using MAUtour.API.DTOs;
 using MapsterMapper;
 using Mapster;
+using MAUtour.API.Utils;
 
 namespace MAUtour.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/gps")]
     public class GPSController : ControllerBase
     {
         private readonly ApplicationContext _context;
+        private GPSUtils _GPSUtils;
         private readonly ILogger<GPSController> _logger;
         public GPSController(ILogger<GPSController> logger, ApplicationContext context)
         {
             _logger = logger;
             _context = context;
+            _GPSUtils = new GPSUtils(_context);
         }
 
         [HttpGet("/pins", Name = "GetPins")]
-        public IEnumerable<PinsDTO>? GetPins()
+        public async Task<IEnumerable<PinsDTO>?> GetPinsAsync()
         {
-            var pins = _context.UserPins.Include(p => p.Users).Include(p=>p.Type).ToList();
-            if (pins.Any())
-            {
-                List<PinsDTO> getPins = pins.Adapt<List<PinsDTO>>();
-                return getPins;
-            } 
-            return null;
+            return await _GPSUtils.GetAllPinsAsync();
         }
 
         [HttpGet("/pins/{name}", Name = "FindPin")]
-        public IEnumerable<PinsDTO>? FindPin(string name)
+        public async Task<IEnumerable<PinsDTO>?> FindPin(string name)
         {
-            var pins = _context.UserPins.Include(p => p.Users).Where(p => p.Name.Contains(name));
-            if (pins is not null)
-            {
-                List<PinsDTO> getPins = pins.Adapt<List<PinsDTO>>();
-                return getPins;
-            }
-            return null;
+            return await _GPSUtils.FindPinAsync(name);
         }
 
         [HttpGet("/routes", Name = "GetRoutes")]
-        public IEnumerable<GetRoutesDTO>? GetRoutes()
+        public async Task<IEnumerable<GetRoutesDTO>?> GetRoutes()
         {
-            var routes = _context.PinRoutes
-                .Include(p=>p.UserRoutes)
-                .ThenInclude(p=>p.Users)
-                .Include(p=>p.UserPins)
-                .ThenInclude(p=>p.Type)
-                .Include(p=>p.UserPins)
-                .ThenInclude(p=>p.Users)
-                .AsSplitQuery().ToList();
-
-            if (routes.Any())
-            {
-                List<GetRoutesDTO> getRoutes = routes.Adapt<List<GetRoutesDTO>>();
-                return getRoutes;
-            }
-            return null;
-        }
-
-        [HttpGet("/users", Name = "GetUsers")]
-        public IEnumerable<UserDTO>? GetUsers()
-        {
-            var users = _context.UserRoles.Include(p => p.Users).Include(p => p.Roles).ToList();
-            if (users.Any())
-            {
-                List<UserDTO> getUsers = users.Adapt<List<UserDTO>>();
-                return getUsers;
-            }
-            return null;
-        }
-
-        [HttpGet("/users/{id}", Name = "FindUser")]
-        public UserDTO? FindUsers(int id)
-        {
-            var users = _context.UserRoles.Include(p=>p.Users).Include(p=>p.Roles).FirstOrDefault(p=>p.UserId == id);
-            if (users is not null)
-            {
-                UserDTO getUsers = users.Adapt<UserDTO>();
-                return getUsers;
-            }
-            return null;
+            return await _GPSUtils.GetRoutesAsync();
         }
     }
 }

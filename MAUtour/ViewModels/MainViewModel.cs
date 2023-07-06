@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MAUtour.ViewModels
 {
-    internal class PinsViewModel
+    internal class MainViewModel
     {
     }
 }
