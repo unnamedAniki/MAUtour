@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Utils.DbConnect.TestData
 {
-    internal class TestPinsData
+    public class TestPinsData
     {
         public static TypeOfPins[] CreatePinTypes()
         {

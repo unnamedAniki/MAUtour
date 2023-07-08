@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
-namespace MAUtour.ViewModels
+﻿namespace MAUtour.ViewModels
 {
-    internal class MapViewModel : INotifyPropertyChanged
+    internal class MapViewModel : BaseViewModel
     {
         private string _searchText;
         private string _searchPlaceholder;
@@ -21,13 +12,17 @@ namespace MAUtour.ViewModels
         private string _roadLabel;
         private string _disableModeButtonText;
         private string _addPinButtonText;
-        public event PropertyChangedEventHandler PropertyChanged;
         public MapViewModel()
         {
             SearchText = "Поиск...";
             SearchPlaceholder = "Введите текст для поиска...";
             ShowButtonName = "Показать больше";
             HideButtonName = "Скрыть";
+            PinName = string.Empty;
+            PinDescription = string.Empty;
+            PinInfo = string.Empty;
+            AddPinButtonText = "Добавить метку";
+            DisableModeButtonText = "Отменить создание маршрута";
         }
 
         public string SearchText
@@ -101,8 +96,5 @@ namespace MAUtour.ViewModels
             get => _disableModeButtonText; 
             set => _disableModeButtonText = value;
         }
-
-        private void OnPropertyChanged([CallerMemberName] string property = "") =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
     }
 }

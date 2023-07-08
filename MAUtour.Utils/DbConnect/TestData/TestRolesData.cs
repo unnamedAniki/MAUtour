@@ -2,7 +2,7 @@
 
 namespace MAUtour.Utils.DbConnect.TestData
 {
-    internal class TestRolesData
+    public class TestRolesData
     {
         public static Roles[] CreateRolesData()
         {

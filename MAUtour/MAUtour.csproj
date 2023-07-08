@@ -113,4 +113,8 @@
 	  <ProjectReference Include="..\MAUtour.Utils\MAUtour.Utils.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Local\Repository\" />
+	</ItemGroup>
+
 </Project>

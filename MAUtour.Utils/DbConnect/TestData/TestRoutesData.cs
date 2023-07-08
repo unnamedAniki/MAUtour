@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Utils.DbConnect.TestData
 {
-    internal class TestRoutesData
+    public class TestRoutesData
     {
         public static TypeOfRoutes[] CreateRouteTypes()
         {

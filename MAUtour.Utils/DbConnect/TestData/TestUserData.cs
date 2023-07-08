@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Utils.DbConnect.TestData
 {
-    internal class TestUserData
+    public class TestUserData
     {
         public static Users[] CreateUserData()
         {
