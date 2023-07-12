@@ -1,4 +1,6 @@
-﻿using MAUtour.Utils.DbConnect;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Markup;
+using MAUtour.Utils.DbConnect;
 
 using Microsoft.Extensions.Logging;
 
@@ -17,14 +19,14 @@ public static class MauiProgram
 		builder
 			.UseMauiApp<App>()
 			.UseSkiaSharp(true)
-			.ConfigureFonts(fonts =>
+			.UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
-
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
 		return builder.Build();

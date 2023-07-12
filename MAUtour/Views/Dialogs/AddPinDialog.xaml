@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MAUtour.Views.Dialogs.AddPinDialog"
+               Color="Transparent">
+    <Border
+            Margin="10"
+            HorizontalOptions="CenterAndExpand"
+            VerticalOptions="CenterAndExpand"
+            BackgroundColor="#f0f0f0">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10"/>
+        </Border.StrokeShape>
+        <VerticalStackLayout>
+            <Label 
+                FontSize="Subtitle"
+                Text="Тестовая параша епта"
+                TextColor="{StaticResource Black}"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+            <VerticalStackLayout
+                Margin="10">
+                <Label 
+                    FontSize="Subtitle"
+                    Text="Наименование"
+                    TextColor="{StaticResource Black}" />
+                <Entry
+                    FontSize="Subtitle"
+                    Text="123"
+                    Placeholder="Введите наименование"
+                    TextColor="{StaticResource Primary}"/>
+                <Label 
+                    FontSize="Subtitle"
+                    Text="Описание"
+                    TextColor="{StaticResource Black}" />
+                <Entry
+                    FontSize="Subtitle"
+                    Text="123"
+                    Placeholder="Введите описание"
+                    TextColor="{StaticResource Primary}"/>
+            </VerticalStackLayout>
+            <Button BackgroundColor="#D5D5D5" Text="Добавить метку" FontSize="Title" VerticalOptions="End"/>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>
+

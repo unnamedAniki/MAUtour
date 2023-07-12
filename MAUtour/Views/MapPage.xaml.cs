@@ -29,6 +29,8 @@ using Easing = Mapsui.Animations.Easing;
 using Mapsui.Rendering.Skia;
 using System.Reflection;
 using System.Xml.Linq;
+using CommunityToolkit.Maui.Views;
+using MAUtour.Views.Dialogs;
 
 namespace MAUtour;
 
@@ -135,29 +137,32 @@ public partial class MapPage : ContentPage
             MaxVisible = 50,
             Name = "Roads"
         };
-        ShowMoreButton.Clicked += async (s, e) =>
-        {
-            double i = MoreInfoPanel.HeightRequest;
-            while (i < 450)
-            {
-                MoreInfoPanel.HeightRequest = i;
-                await Task.Delay(5);
-                i+=10;
-            }
-            ShowMoreButton.IsVisible = false;
-            HideInfoButton.IsVisible = true;
-        };
-        HideInfoButton.Clicked += (s, e) =>
-        {
-            MoreInfoPanel.IsVisible = false;
-            HideInfoButton.IsVisible = false;
-            ShowMoreButton.IsVisible = true;
-            MoreInfoPanel.HeightRequest = 50;
-        };
+        //ShowMoreButton.Clicked += async (s, e) =>
+        //{
+        //    double i = MoreInfoPanel.HeightRequest;
+        //    while (i < 450)
+        //    {
+        //        MoreInfoPanel.HeightRequest = i;
+        //        await Task.Delay(5);
+        //        i+=10;
+        //    }
+        //    ShowMoreButton.IsVisible = false;
+        //    HideInfoButton.IsVisible = true;
+        //};
+        //HideInfoButton.Clicked += (s, e) =>
+        //{
+        //    MoreInfoPanel.IsVisible = false;
+        //    HideInfoButton.IsVisible = false;
+        //    ShowMoreButton.IsVisible = true;
+        //    MoreInfoPanel.HeightRequest = 50;
+        //};
         mapView.Map.Layers.Add(roadlayer);
         mapView.Map.Layers.Add(pinsLayer);
         mapView.Map.Info += async (s, e) =>
         {
+            var test = new AddPinDialog();
+            this.ShowPopup(test);
+            return;
             if (e.MapInfo?.WorldPosition == null) return;
 
             var vectorStyle = e.MapInfo?.Feature?.Styles.Where(s => s is CalloutStyle).Cast<CalloutStyle>().FirstOrDefault();
@@ -177,8 +182,8 @@ public partial class MapPage : ContentPage
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
                     await AddPin(e);
-                    PinName.Text = "Наименование: " + pinName;
-                    PinDescription.Text = "Описание: " + pinDescription;
+                    //PinName = "Наименование: " + pinName;
+                    //PinDescription = "Описание: " + pinDescription;
                     return;
                 }
                 else
@@ -206,8 +211,8 @@ public partial class MapPage : ContentPage
                 }
                 else
                 {
-                    PinName.Text = "Наименование: " + roadName;
-                    PinDescription.Text = "Описание: " + roadDescription;
+                    //PinName = "Наименование: " + roadName;
+                    //PinDescription = "Описание: " + roadDescription;
                     AddStartPin(roadName, roadDescription, e);
                 }
             }
@@ -559,5 +564,10 @@ public partial class MapPage : ContentPage
         {
            
         }
+    }
+
+    private void mapView_Info(object sender, MapInfoEventArgs e)
+    {
+
     }
 }

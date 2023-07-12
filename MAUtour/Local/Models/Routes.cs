@@ -11,7 +11,7 @@ namespace MAUtour.Local.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public RouteType RouteType { get; set; }
+        public RouteTypes RouteType { get; set; }
         public int RouteTypeId { get; set; }
     }
 }
