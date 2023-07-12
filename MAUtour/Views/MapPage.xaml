@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:MAUtour.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:mapsui ="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Карта">
     <Grid>
         <Grid.RowDefinitions>
@@ -55,9 +56,9 @@
                     <Button BackgroundColor="#D5D5D5" Command="{Binding }" Text="{Binding ShowButtonName}" FontSize="Small"/>
                     <Button BackgroundColor="#D5D5D5" Text="{Binding HideButtonName}" FontSize="Small" IsVisible="false"/>
                     <Label Text = "{Binding PinInfo}" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
-                    <Label x:Name = "PinName" Text="{Binding PinName}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
-                    <Label x:Name = "PinDescription" Text ="{Binding PinDescription}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
-                    <Label Text = "Фотографии места" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                    <Label Text="{Binding PinName}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Label Text ="{Binding PinDescription}" FontSize="Medium" TextColor="{StaticResource Primary}"/>
+                    <Label Text = "{Binding ImageLabel}" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
                     <CarouselView
                         x:Name="CarouselImages"
                         ItemsSource="{Binding images}">
@@ -114,8 +115,8 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <HorizontalStackLayout Margin="10">
-                    <Button x:Name="addPinButton" Text="{Binding }" FontSize="Small"/>
-                    <Button x:Name="CloseButton" Text="Закрыть" FontSize="Small"/>
+                    <Button x:Name="addPinButton" Text="{Binding AddPinButtonText}" FontSize="Small"/>
+                    <Button x:Name="CloseButton" Text="{Binding EndRoadButton}" FontSize="Small"/>
                 </HorizontalStackLayout>
             </StackLayout>
         </Border>
@@ -142,9 +143,9 @@
                     HeightRequest="200"
                     WidthRequest="350">
                 </Image>
-                <Label FontSize="Title" x:Name = "nameLabel" Text="Наименование: "/>
-                <Label FontSize="Subtitle" x:Name = "descriptionLabel" Text="Описание: "/>
-                <Label FontSize="Subtitle" x:Name = "additionalInfo" Text="Дополнительная информация: "/>
+                <Label FontSize="Title" Text="{Binding PinName}"/>
+                <Label FontSize="Subtitle" Text="{Binding PinDescription}"/>
+                <Label FontSize="Subtitle" Text="{Binding PinInfo}"/>
             </StackLayout>
         </Border>
         <Border
@@ -163,9 +164,9 @@
                 <Shadow Brush="Black" Radius="10"/>
             </Border.Shadow>
             <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
-                <Label FontSize="Title" x:Name = "roadLabel" Text="Включен режим создания маршрута"/>
-                <Button FontSize="Subtitle" x:Name = "disableRoadMode" Text="Закончить создание"/>
-                <Button FontSize="Subtitle" x:Name = "addRoadPin" Text="Добавить место на маршруте"/>
+                <Label FontSize="Title" Text="{Binding RoadLabel}"/>
+                <Button FontSize="Subtitle" x:Name = "disableRoadMode" Text="{Binding DisableModeButtonText}"/>
+                <Button FontSize="Subtitle" x:Name = "addRoadPin" Text="{Binding AddPinButtonText}"/>
             </StackLayout>
         </Border>
     </Grid>
