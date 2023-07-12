@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:vm="clr-namespace:MAUtour.ViewModels.Dialogs"
+             x:Class="MAUtour.Views.Dialogs.AddPinDialog"
+               Color="Transparent">
+    <Border
+        Margin="10"
+        BackgroundColor="#D5D5D5"
+        WidthRequest="300"
+        HeightRequest="400">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10" />
+        </Border.StrokeShape>
+        <VerticalStackLayout
+            Margin="10">
+            <Label 
+                FontSize="Title"
+                Text="{Binding Title}"/>
+            <Label 
+                FontSize="Subtitle"
+                Text="{Binding NameLabel}"/>
+            <Entry
+                FontSize="Subtitle"
+                Text="{Binding Name}"
+                Placeholder="{Binding NamePlaceholder}"/>
+            <Label 
+                FontSize="Subtitle"
+                Text="{Binding DescriptionLabel}"/>
+            <Entry
+                FontSize="Subtitle"
+                Text="{Binding Description}"
+                Placeholder="{Binding DescriptionPlaceholder}"/>
+            <Label 
+                FontSize="Subtitle"
+                Text="{Binding AdditionalInfoLabel}"/>
+            <Entry
+                FontSize="Subtitle"
+                Text="{Binding AdditionalInfo}"
+                Placeholder="{Binding AdditionalInfoPlaceholder}"/>
+            <HorizontalStackLayout HorizontalOptions="CenterAndExpand"
+                                   Margin="5">
+                <Button
+                    Text="{Binding AddButtonText}"/>
+                <Button 
+                    Text="{Binding CancelButtonText}"
+                    Clicked="Close"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>

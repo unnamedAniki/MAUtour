@@ -1,4 +1,9 @@
-﻿namespace MAUtour.ViewModels
+﻿using System.Windows.Input;
+using CommunityToolkit.Maui.Views;
+
+using MAUtour.Views.Dialogs;
+
+namespace MAUtour.ViewModels
 {
     internal class MapViewModel : BaseViewModel
     {
@@ -24,7 +29,7 @@
             AddPinButtonText = "Добавить метку";
             DisableModeButtonText = "Отменить создание маршрута";
         }
-
+        public ICommand ShowDialog { get; private set; }
         public string SearchText
         {
             get => _searchText;

@@ -3,11 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUtour.MapPage"
              xmlns:local="clr-namespace:MAUtour.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:mapsui ="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
              Title="Карта">
-    <ContentPage.BindingContext>
-        <local:MapViewModel />
-    </ContentPage.BindingContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -74,7 +72,7 @@
                                 </Border>
                             </DataTemplate>
                         </CarouselView.ItemTemplate>
-                    </CarouselView>  
+                    </CarouselView>
                 </VerticalStackLayout>
             </ScrollView>
         </Border>

@@ -1,7 +1,6 @@
-﻿using MAUtour.Utils.DbConnect;
-
+﻿using CommunityToolkit.Maui;
+using MAUtour.Utils.DbConnect;
 using Microsoft.Extensions.Logging;
-
 using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace MAUtour;
@@ -15,7 +14,8 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
+            .UseMauiApp<App>()
 			.UseSkiaSharp(true)
 			.ConfigureFonts(fonts =>
 			{

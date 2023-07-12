@@ -29,6 +29,9 @@ using Easing = Mapsui.Animations.Easing;
 using Mapsui.Rendering.Skia;
 using System.Reflection;
 using System.Xml.Linq;
+using MAUtour.ViewModels;
+using CommunityToolkit.Maui.Views;
+using MAUtour.Views.Dialogs;
 
 namespace MAUtour;
 
@@ -46,6 +49,7 @@ public partial class MapPage : ContentPage
 
     public MapPage()
     {
+        this.BindingContext = new MapViewModel();
         InitializeComponent();
     }
     class Sources
@@ -135,25 +139,25 @@ public partial class MapPage : ContentPage
             MaxVisible = 50,
             Name = "Roads"
         };
-        ShowMoreButton.Clicked += async (s, e) =>
-        {
-            double i = MoreInfoPanel.HeightRequest;
-            while (i < 450)
-            {
-                MoreInfoPanel.HeightRequest = i;
-                await Task.Delay(5);
-                i+=10;
-            }
-            ShowMoreButton.IsVisible = false;
-            HideInfoButton.IsVisible = true;
-        };
-        HideInfoButton.Clicked += (s, e) =>
-        {
-            MoreInfoPanel.IsVisible = false;
-            HideInfoButton.IsVisible = false;
-            ShowMoreButton.IsVisible = true;
-            MoreInfoPanel.HeightRequest = 50;
-        };
+        //ShowMoreButton.Clicked += async (s, e) =>
+        //{
+        //    double i = MoreInfoPanel.HeightRequest;
+        //    while (i < 450)
+        //    {
+        //        MoreInfoPanel.HeightRequest = i;
+        //        await Task.Delay(5);
+        //        i+=10;
+        //    }
+        //    ShowMoreButton.IsVisible = false;
+        //    HideInfoButton.IsVisible = true;
+        //};
+        //HideInfoButton.Clicked += (s, e) =>
+        //{
+        //    MoreInfoPanel.IsVisible = false;
+        //    HideInfoButton.IsVisible = false;
+        //    ShowMoreButton.IsVisible = true;
+        //    MoreInfoPanel.HeightRequest = 50;
+        //};
         mapView.Map.Layers.Add(roadlayer);
         mapView.Map.Layers.Add(pinsLayer);
         mapView.Map.Info += async (s, e) =>
@@ -173,28 +177,21 @@ public partial class MapPage : ContentPage
 
             if (roadContent.IsVisible == false)
             {
+                AddPinDialog addDialog;
                 Polyline.Clear();
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
-                    await AddPin(e);
+                    addDialog = new AddPinDialog(true);
                     PinName.Text = "Наименование: " + pinName;
                     PinDescription.Text = "Описание: " + pinDescription;
-                    return;
                 }
                 else
                 {
-                    roadName = await DisplayPromptAsync("Новый маршрут", "Введите наименование маршрута", "Добавить", "Отмена", "Название...", 20);
-                    if(roadName == null)
-                    {
-                        return;
-                    }
-                    roadDescription = await DisplayPromptAsync("Новый маршрут", "Введите описание маршрута", "Добавить", "Отмена", "Описание...", 20);
-                    if (roadName == null)
-                    {
-                        return;
-                    }
+                    addDialog = new AddPinDialog(false);
                     roadContent.IsVisible = true;
                 }
+
+                await PopupExtensions.ShowPopupAsync(this, addDialog);
             }
             else
             {
@@ -473,7 +470,7 @@ public partial class MapPage : ContentPage
         
     private void FindButton_Clicked(object sender, EventArgs e)
     {
-        searchLabel.IsVisible = true;
+        //searchLabel.IsVisible = true;
     }
 
     private void OnPinClicked(object? sender, PinClickedEventArgs e)
