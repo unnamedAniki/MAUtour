@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Maui.Core;
+using MAUtour.Local.DBConnect;
 using CommunityToolkit.Maui.Views;
+
+using MAUtour.Local.UnitOfWork;
 
 using System;
 using System.Collections.Generic;
@@ -7,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MAUtour.Local.UnitOfWork.Interface;
 
 namespace MAUtour.ViewModels.Dialogs
 {
@@ -15,9 +19,12 @@ namespace MAUtour.ViewModels.Dialogs
         private string _name;
         private string _description;
         private string _additionalInfo;
-        public DialogViewModel(Popup popup, bool isPin = false)
+        private IUnitOfWork _unitOfWork;
+        public DialogViewModel(Popup popup, IUnitOfWork unitOfWork, bool isPin = false)
         {
             InizializeDialog(isPin, popup);
+            _unitOfWork = unitOfWork;
+            _unitOfWork.pinRepository.GetAllAsync();
         }
 
         private void InizializeDialog(bool isPin, Popup popup)

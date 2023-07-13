@@ -1,10 +1,13 @@
-﻿namespace MAUtour;
+﻿using MAUtour.Views.Dialogs;
+
+namespace MAUtour;
 
 public partial class AppShell : Shell
 {
 	public AppShell()
-	{
-		InitializeComponent();
-		Routing.RegisterRoute("pin/details", typeof(PinPage));
+    {
+        Routing.RegisterRoute("pin/details", typeof(PinPage));
+        Routing.RegisterRoute("Map", typeof(MapPage));
+        InitializeComponent();
 	}
 }

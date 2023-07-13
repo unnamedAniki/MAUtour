@@ -32,6 +32,9 @@ using System.Xml.Linq;
 using MAUtour.ViewModels;
 using CommunityToolkit.Maui.Views;
 using MAUtour.Views.Dialogs;
+using MAUtour.Local.UnitOfWork.Interface;
+using MAUtour.Local.DBConnect;
+using Itinero;
 
 namespace MAUtour;
 
@@ -46,10 +49,10 @@ public partial class MapPage : ContentPage
     private List<Sources> images = new List<Sources>();
     private string pinName = null;
     private string pinDescription = null;
-
+    private IUnitOfWork _context;
     public MapPage()
     {
-        this.BindingContext = new MapViewModel();
+        BindingContext = new MapViewModel();
         InitializeComponent();
     }
     class Sources
@@ -178,16 +181,16 @@ public partial class MapPage : ContentPage
             if (roadContent.IsVisible == false)
             {
                 AddPinDialog addDialog;
+
+                _context = this.Handler.MauiContext.Services.GetService<IUnitOfWork>();
                 Polyline.Clear();
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
-                    addDialog = new AddPinDialog(true);
-                    PinName.Text = "Наименование: " + pinName;
-                    PinDescription.Text = "Описание: " + pinDescription;
+                    addDialog = new AddPinDialog(true, _context);
                 }
                 else
                 {
-                    addDialog = new AddPinDialog(false);
+                    addDialog = new AddPinDialog(false, _context);
                     roadContent.IsVisible = true;
                 }
 
@@ -203,8 +206,6 @@ public partial class MapPage : ContentPage
                 }
                 else
                 {
-                    PinName.Text = "Наименование: " + roadName;
-                    PinDescription.Text = "Описание: " + roadDescription;
                     AddStartPin(roadName, roadDescription, e);
                 }
             }

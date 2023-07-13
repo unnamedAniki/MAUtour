@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MAUtour.Local.DBConnect
 {
-    internal class LocalContext : DbContext
+    public class LocalContext : DbContext
     {
         public DbSet<Pins> LocalPins { get; set; }
         public DbSet<Routes> LocalRoutes { get; set; }
@@ -18,8 +18,8 @@ namespace MAUtour.Local.DBConnect
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseSqlite($"Data Source={System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData)}\\local.db");
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlite("Database=localdb");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

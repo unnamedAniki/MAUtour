@@ -10,11 +10,8 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Local.Repository
 {
-    internal class RouteRepository : Repository<Routes>, IRoutesRepository
+    internal class PinTypesRepository : Repository<PinTypes>, IPinTypesRepository
     {
-        public RouteRepository(LocalContext _context) : base(_context) 
-        {
-            
-        }  
+        public PinTypesRepository(LocalContext _context) : base(_context) { }
     }
 }

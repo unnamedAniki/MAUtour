@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MAUtour.Local.Models
 {
-    internal class RouteTypes
+    public class RouteTypes
     {
         public int Id { get; set; }
         public string Name { get; set; }
