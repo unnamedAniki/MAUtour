@@ -186,15 +186,23 @@ public partial class MapPage : ContentPage
                 Polyline.Clear();
                 if (!await DisplayAlert("Новое место", "Добавить маршрут или метку?", "Маршрут", "Метку") && isCreatedRoad)
                 {
-                    addDialog = new AddPinDialog(true, _context);
+                    addDialog = new AddPinDialog(true, _context, e.MapInfo.WorldPosition);
                 }
                 else
                 {
-                    addDialog = new AddPinDialog(false, _context);
+                    addDialog = new AddPinDialog(false, _context, e.MapInfo.WorldPosition);
                     roadContent.IsVisible = true;
                 }
 
-                await PopupExtensions.ShowPopupAsync(this, addDialog);
+                var test = await PopupExtensions.ShowPopupAsync(this, addDialog);
+                if(test is bool boolResult)
+                {
+                    if (boolResult)
+                    {
+                        var pins = _context.pinRepository.GetByIdAsync(1).Result;
+                        AddPin(new Coordinate(pins.Latitude, pins.Longitude));
+                    }
+                }
             }
             else
             {
@@ -273,46 +281,39 @@ public partial class MapPage : ContentPage
 
     private async void AddPin(Coordinate e)
     {
-        pinName = await DisplayPromptAsync("Новая метка", "Введите наименование метки", "Добавить", "Отмена", "Название...");
-        pinDescription = await DisplayPromptAsync("Новая метка", "Введите описание метки", "Добавить", "Отмена", "Описание...");
-        if (pinName == null)
-            return;
-        var typeofPin = await DisplayActionSheet("Выберите тип метки", "Отмена", "Обычный",
-            buttons: new string[] { "Трасса", "Кемпинг", "Опасный участок", "Животные", "Красивое место" });
-        if (typeofPin == null)
-            return;
         await Task.Run(() =>
         {
             int _atlasBitmapId = 0;
             string imagePath = "MAUtour.";
             Assembly assembly = GetType().GetTypeInfo().Assembly;
-            switch (typeofPin)
-            {
-                case "Трасса":
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.race-pin.png");
-                    imagePath += "Resources.Images.race-image.jpg";
-                    break;
-                case "Кемпинг":
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.green-pin.png");
-                    imagePath += "Resources.Images.green-image.jpg";
-                    break;
-                case "Опасный участок":
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.danger-pin.png");
-                    imagePath += "Resources.Images.danger-image.png";
-                    break;
-                case "Животные":
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.animal-pin.png");
-                    imagePath += "Resources.Images.animal-image.png";
-                    break;
-                case "Красивое место":
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.landscape-pin.png");
-                    imagePath += "Resources.Images.landscape-image.png";
-                    break;
-                default:
-                    _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.default-pin.png");
-                    imagePath += "Resources.Images.default-image.jpg";
-                    break;
-            }
+            _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.default-pin.png");
+            imagePath += "Resources.Images.default-image.jpg";
+            //switch (typeofPin)
+            //{
+            //    case "Трасса":
+            //        _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.race-pin.png");
+            //        imagePath += "Resources.Images.race-image.jpg";
+            //        break;
+            //    case "Кемпинг":
+            //        _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.green-pin.png");
+            //        imagePath += "Resources.Images.green-image.jpg";
+            //        break;
+            //    case "Опасный участок":
+            //        _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.danger-pin.png");
+            //        imagePath += "Resources.Images.danger-image.png";
+            //        break;
+            //    case "Животные":
+            //        _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.animal-pin.png");
+            //        imagePath += "Resources.Images.animal-image.png";
+            //        break;
+            //    case "Красивое место":
+            //        _atlasBitmapId = typeof(MapPage).LoadBitmapId("Resources.Images.landscape-pin.png");
+            //        imagePath += "Resources.Images.landscape-image.png";
+            //        break;
+            //    default:
+
+            //        break;
+            //}
             var featureBitmapId = BitmapRegistry.Instance.Register(new Sprite(_atlasBitmapId, 0, 0, 21, 21, 1));
             SKBitmap resourceBitmap;
             using (Stream stream = assembly.GetManifestResourceStream(imagePath))

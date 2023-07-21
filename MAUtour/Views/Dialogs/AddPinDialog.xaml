@@ -21,6 +21,14 @@
             <Label 
                 FontSize="Subtitle"
                 Text="{Binding NameLabel}"/>
+            <Label 
+                FontSize="Title"
+                Text="{Binding TypeLabel}"/>
+            <Picker
+                ItemsSource="{Binding PinTypes}"
+                ItemDisplayBinding="{Binding Name}"
+                SelectedItem="{Binding SelectedPinType}"
+                FontSize="Subtitle"/>
             <Entry
                 FontSize="Subtitle"
                 Text="{Binding Name}"
@@ -42,7 +50,8 @@
             <HorizontalStackLayout HorizontalOptions="CenterAndExpand"
                                    Margin="5">
                 <Button
-                    Text="{Binding AddButtonText}"/>
+                    Text="{Binding AddButtonText}"
+                    Command="{Binding Add}"/>
                 <Button 
                     Text="{Binding CancelButtonText}"
                     Clicked="Close"/>

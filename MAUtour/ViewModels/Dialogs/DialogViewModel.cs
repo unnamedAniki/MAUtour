@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MAUtour.Local.UnitOfWork.Interface;
+using System.Collections.ObjectModel;
+using MAUtour.Local.Models;
+using Mapsui;
 
 namespace MAUtour.ViewModels.Dialogs
 {
@@ -20,16 +23,24 @@ namespace MAUtour.ViewModels.Dialogs
         private string _description;
         private string _additionalInfo;
         private IUnitOfWork _unitOfWork;
-        public DialogViewModel(Popup popup, IUnitOfWork unitOfWork, bool isPin = false)
+        private MPoint _position;
+        public ObservableCollection<PinTypes> PinTypes { get; set; } = new();
+        public ObservableCollection<RouteTypes> RouteTypes { get; set; } = new();
+        public PinTypes SelectedPinType { get; set; }
+        public DialogViewModel(Popup popup, IUnitOfWork unitOfWork, MPoint position, bool isPin = false)
         {
-            InizializeDialog(isPin, popup);
             _unitOfWork = unitOfWork;
-            _unitOfWork.pinRepository.GetAllAsync();
+            _position = position;
+            PinTypes = new ObservableCollection<PinTypes>(_unitOfWork.pinTypesRepository.GetAllAsync().Result);
+            SelectedPinType = new PinTypes();
+            RouteTypes = new ObservableCollection<RouteTypes>(_unitOfWork.routeTypesRepository.GetAllAsync().Result);
+            InizializeDialog(isPin, popup);
         }
 
-        private void InizializeDialog(bool isPin, Popup popup)
+        private async void InizializeDialog(bool isPin, Popup popup)
         {
             NameLabel = "Наименование";
+            TypeLabel = "Тип";
             DescriptionLabel = "Описание";
             AdditionalInfoLabel = "Комментарий";
             AddButtonText = "Добавить";
@@ -45,7 +56,17 @@ namespace MAUtour.ViewModels.Dialogs
                 Title = "Добавление новой метки";
                 Add = new Command(async (obj) =>
                 {
-                    return;
+                    var test = new Pins
+                    {
+                        PinTypeId = SelectedPinType.Id,
+                        Name = Name,
+                        Description = Description,
+                        Latitude = _position.X,
+                        Longitude = _position.Y,
+                    };
+                    await _unitOfWork.pinRepository.AddAsync(test);
+                    await _unitOfWork.CommitAsync();
+                    popup.Close(true);
                 });
             }
             else
@@ -61,6 +82,7 @@ namespace MAUtour.ViewModels.Dialogs
         public ICommand Cancel { get; private set; }
         public string Title { get; private set; }
         public string NameLabel { get; private set; }
+        public string TypeLabel { get; private set; }
         public string DescriptionLabel { get; private set; }
         public string AdditionalInfoLabel { get; private set; }
         public string NamePlaceholder { get; private set; }

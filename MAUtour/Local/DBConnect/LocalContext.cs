@@ -1,4 +1,5 @@
-﻿using MAUtour.Local.Models;
+﻿using MAUtour.Local.DBConnect.DictData;
+using MAUtour.Local.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MAUtour.Local.DBConnect
@@ -34,6 +35,9 @@ namespace MAUtour.Local.DBConnect
                 .HasOne(p => p.RouteType)
                 .WithMany(p => p.Routes)
                 .HasForeignKey(p => p.RouteTypeId);
+
+            modelBuilder.Entity<PinTypes>().HasData(DictionaryData.GetPinTypes());
+            modelBuilder.Entity<RouteTypes>().HasData(DictionaryData.GetRouteTypes());
 
             base.OnModelCreating(modelBuilder);
         }
