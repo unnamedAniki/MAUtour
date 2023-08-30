@@ -3,12 +3,6 @@ using MAUtour.Local.Repository;
 using MAUtour.Local.Repository.Interfaces;
 using MAUtour.Local.UnitOfWork.Interface;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MAUtour.Local.UnitOfWork
 {
     internal class UnitOfWork : IUnitOfWork

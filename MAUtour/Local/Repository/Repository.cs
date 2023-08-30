@@ -1,13 +1,7 @@
 ﻿using MAUtour.Local.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using MAUtour.Local.DBConnect;
 using Microsoft.EntityFrameworkCore.Metadata;
 

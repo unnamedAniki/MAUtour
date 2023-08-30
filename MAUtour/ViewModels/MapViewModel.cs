@@ -1,7 +1,8 @@
-﻿using System.Windows.Input;
-using CommunityToolkit.Maui.Views;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 
-using MAUtour.Views.Dialogs;
+using MAUtour.Local.Models;
+using MAUtour.Local.UnitOfWork.Interface;
 
 namespace MAUtour.ViewModels
 {
@@ -17,8 +18,17 @@ namespace MAUtour.ViewModels
         private string _roadLabel;
         private string _disableModeButtonText;
         private string _addPinButtonText;
-        public MapViewModel()
+        private IUnitOfWork _unitOfWork;
+        public ObservableCollection<Routes> Routes { get;  private set; }
+        public MapViewModel(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+            InitializeData();
+        }
+
+        private async void InitializeData()
+        {
+            Routes = new ObservableCollection<Routes>(await _unitOfWork.routesRepository.GetAllAsync());
             SearchText = "Поиск...";
             SearchPlaceholder = "Введите текст для поиска...";
             ShowButtonName = "Показать больше";
@@ -28,8 +38,15 @@ namespace MAUtour.ViewModels
             PinInfo = string.Empty;
             AddPinButtonText = "Добавить метку";
             DisableModeButtonText = "Отменить создание маршрута";
+            RoadLabel = "Режим создания маршрута";
+            SaveRoadButtonText = "Сохранить маршрут";
+            ShowRoadText = "Показать";
         }
+        public string ShowRoadText { get; private set; }
         public ICommand ShowDialog { get; private set; }
+        public ICommand ShowRoad { get; private set; }
+        public string SaveRoadButtonText { get; private set; }
+        public string RoadLabel { get; private set; }  
         public string SearchText
         {
             get => _searchText;
@@ -40,24 +57,9 @@ namespace MAUtour.ViewModels
             }
         }
 
-        public string SearchPlaceholder
-        {
-            get => _searchPlaceholder; 
-            set => _searchPlaceholder = value; 
-        }
-
-        public string ShowButtonName
-        {
-            get => _showButtonName;
-            set => _showButtonName = value;
-        }
-
-        public string HideButtonName
-        {
-            get => _hideButtonName; 
-            set => _hideButtonName = value;
-        }
-
+        public string SearchPlaceholder { get; private set; }
+        public string ShowButtonName { get; private set; }
+        public string HideButtonName { get; private set; }
         public string PinName
         {
             get => _pinName; 
@@ -88,12 +90,6 @@ namespace MAUtour.ViewModels
         {
             get => _addPinButtonText;
             set => _addPinButtonText = value;
-        }
-
-        public string RoadLabel
-        {
-            get => _roadLabel;
-            set => _roadLabel = value;
         }
 
         public string DisableModeButtonText

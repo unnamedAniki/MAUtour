@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MAUtour.Local.Models
+﻿namespace MAUtour.Local.Models
 {
     public class Pins
     {

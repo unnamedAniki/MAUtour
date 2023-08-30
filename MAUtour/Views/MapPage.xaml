@@ -11,8 +11,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Border
+        <!--<Border
             ZIndex="1"
+            HeightRequest="200" 
+            WidthRequest="350"
             Margin="20"
             VerticalOptions="Start"
             HorizontalOptions="Start"
@@ -36,8 +38,24 @@
                     Placeholder="{Binding SearchPlaceholder}"
                     TextColor="{StaticResource Primary}"
                     IsVisible="false"/>
+                <ListView Margin="10"
+                          ItemsSource="{Binding Routes}"
+                          SelectedItem="{Binding SelectedRoute}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ScrollView>
+                                    <StackLayout HeightRequest="80">
+                                        <Label Text="{Binding Name}" FontSize="Title"/>
+                                        <Button Text="{Binding ShowRoadText}" Command="{Binding ShowRoad}"/>
+                                    </StackLayout>
+                                </ScrollView>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackLayout>
-        </Border>
+        </Border>-->
         <Border
             ZIndex="1"
             Margin="15"
@@ -82,11 +100,14 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="10"/>
             </Border.StrokeShape>
-            <mapsui:MapView
-                x:Name="mapView" 
-                VerticalOptions="FillAndExpand"
-                HorizontalOptions="Fill">
-            </mapsui:MapView>
+            <StackLayout>
+                <mapsui:MapView
+                    x:Name="mapView" 
+                    VerticalOptions="FillAndExpand"
+                    HorizontalOptions="Fill">
+                </mapsui:MapView>
+                <Button Text="Record" x:Name="RecordButton"/>
+            </StackLayout>
         </Border>
         <Border
             x:Name="pinsContext"
@@ -164,7 +185,8 @@
             </Border.Shadow>
             <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
                 <Label FontSize="Title" Text="{Binding RoadLabel}"/>
-                <Button FontSize="Subtitle" x:Name = "disableRoadMode" Text="{Binding DisableModeButtonText}"/>
+                <Button FontSize="Subtitle" x:Name = "saveRoad" Text="{Binding SaveRoadButtonText}"/>
+                <Button FontSize="Subtitle" x:Name = "closeRoad" Text="{Binding DisableModeButtonText}"/>
                 <Button FontSize="Subtitle" x:Name = "addRoadPin" Text="{Binding AddPinButtonText}"/>
             </StackLayout>
         </Border>

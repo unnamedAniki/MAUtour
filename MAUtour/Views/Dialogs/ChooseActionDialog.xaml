@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="MAUtour.Views.Dialogs.ChooseActionDialog"
+               xmlns:vm="clr-namespace:MAUtour.ViewModels.Dialogs"
+               Color="Transparent">
+    <Border
+        Margin="10"
+        BackgroundColor="#D5D5D5"
+        WidthRequest="400"
+        HeightRequest="150">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10" />
+        </Border.StrokeShape>
+        <VerticalStackLayout
+            Margin="10">
+            <Label 
+                FontSize="Title"
+                Text="{Binding Info}"/>
+            <HorizontalStackLayout HorizontalOptions="CenterAndExpand"
+                                   Margin="5">
+                <Button
+                    Text="{Binding PinButtonTitle}"
+                    Command="{Binding ChoosePin}"/>
+                <Button 
+                    Text="{Binding RoadButtonTitle}"
+                    Command="{Binding ChooseRoad}"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>

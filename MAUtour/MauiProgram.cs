@@ -4,6 +4,7 @@ using MAUtour.Local.DBConnect;
 using MAUtour.Local.UnitOfWork;
 using MAUtour.Local.UnitOfWork.Interface;
 using MAUtour.Utils.DbConnect;
+using MAUtour.ViewModels;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,9 @@ public static class MauiProgram
 			});
 		builder.Services
 			.AddDbContext<LocalContext>()
-            .AddSingleton<IUnitOfWork, UnitOfWork>();
+			.AddSingleton<IUnitOfWork, UnitOfWork>()
+			.AddSingleton<MapViewModel>()
+			.AddSingleton<MapPage>();
 
 #if DEBUG
 		builder.Logging.AddDebug();

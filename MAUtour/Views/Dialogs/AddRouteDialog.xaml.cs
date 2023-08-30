@@ -2,22 +2,21 @@ using CommunityToolkit.Maui.Views;
 
 using Mapsui;
 
-using MAUtour.Local.DBConnect;
 using MAUtour.Local.UnitOfWork.Interface;
 using MAUtour.ViewModels.Dialogs;
 
 namespace MAUtour.Views.Dialogs;
 
-public partial class AddPinDialog : Popup
+public partial class AddRouteDialog : Popup
 {
-	public AddPinDialog(IUnitOfWork unitOfWork, MPoint position)
+	public AddRouteDialog(IUnitOfWork unitOfWork)
 	{
-		this.BindingContext = new PinDialogViewModel(this, unitOfWork, position);
+		this.BindingContext = new RouteDialogViewModel(this, unitOfWork);
 		InitializeComponent();
 	}
 
     private void Close(object sender, EventArgs e)
     {
-		this.Close(false);
+        this.Close(null);
     }
 }

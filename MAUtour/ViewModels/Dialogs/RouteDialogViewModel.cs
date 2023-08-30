@@ -1,43 +1,37 @@
-﻿using CommunityToolkit.Maui.Core;
-using MAUtour.Local.DBConnect;
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
 
-using MAUtour.Local.UnitOfWork;
+using Mapsui;
+
+using MAUtour.Local.Models;
+using MAUtour.Local.UnitOfWork.Interface;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MAUtour.Local.UnitOfWork.Interface;
-using System.Collections.ObjectModel;
-using MAUtour.Local.Models;
-using Mapsui;
 
 namespace MAUtour.ViewModels.Dialogs
 {
-    internal class DialogViewModel : BaseViewModel
+    internal class RouteDialogViewModel : BaseViewModel
     {
+        private IUnitOfWork _unitOfWork;
         private string _name;
         private string _description;
         private string _additionalInfo;
-        private IUnitOfWork _unitOfWork;
-        private MPoint _position;
-        public ObservableCollection<PinTypes> PinTypes { get; set; } = new();
-        public ObservableCollection<RouteTypes> RouteTypes { get; set; } = new();
-        public PinTypes SelectedPinType { get; set; }
-        public DialogViewModel(Popup popup, IUnitOfWork unitOfWork, MPoint position, bool isPin = false)
+
+        public ObservableCollection<RouteTypes> RouteTypes { get; set; }
+        public RouteTypes SelectedRouteTypes { get; set; }
+
+        public RouteDialogViewModel(Popup popup, IUnitOfWork unitOfWork) 
         {
             _unitOfWork = unitOfWork;
-            _position = position;
-            PinTypes = new ObservableCollection<PinTypes>(_unitOfWork.pinTypesRepository.GetAllAsync().Result);
-            SelectedPinType = new PinTypes();
-            RouteTypes = new ObservableCollection<RouteTypes>(_unitOfWork.routeTypesRepository.GetAllAsync().Result);
-            InizializeDialog(isPin, popup);
+            InitializeDialog(popup);
         }
 
-        private async void InizializeDialog(bool isPin, Popup popup)
+        private void InitializeDialog(Popup popup)
         {
             NameLabel = "Наименование";
             TypeLabel = "Тип";
@@ -51,33 +45,24 @@ namespace MAUtour.ViewModels.Dialogs
             DescriptionPlaceholder = "Введите описание";
             AdditionalInfo = string.Empty;
             DescriptionPlaceholder = "Введите комментарий";
-            if (isPin)
+            Title = "Добавление нового маршрута";
+            RouteTypes = new ObservableCollection<RouteTypes>(_unitOfWork.routeTypesRepository.GetAllAsync().Result);
+            SelectedRouteTypes = new();
+
+            Add = new Command(async (obj) =>
             {
-                Title = "Добавление новой метки";
-                Add = new Command(async (obj) =>
+                var test = new Routes
                 {
-                    var test = new Pins
-                    {
-                        PinTypeId = SelectedPinType.Id,
-                        Name = Name,
-                        Description = Description,
-                        Latitude = _position.X,
-                        Longitude = _position.Y,
-                    };
-                    await _unitOfWork.pinRepository.AddAsync(test);
-                    await _unitOfWork.CommitAsync();
-                    popup.Close(true);
-                });
-            }
-            else
-            {
-                Title = "Добавление нового маршрута";
-                Add = new Command(async (obj) =>
-                {
-                    return;
-                });
-            }
+                    RouteTypeId = SelectedRouteTypes.Id,
+                    Name = Name,
+                    Description = Description
+                };
+                await _unitOfWork.routesRepository.AddAsync(test);
+                await _unitOfWork.CommitAsync();
+                popup.Close(true);
+            });
         }
+
         public ICommand Add { get; private set; }
         public ICommand Cancel { get; private set; }
         public string Title { get; private set; }
@@ -100,7 +85,7 @@ namespace MAUtour.ViewModels.Dialogs
             }
         }
         public string Description
-        { 
+        {
             get => _description;
             set
             {

@@ -10,10 +10,10 @@ namespace MAUtour.Local.DBConnect
         public DbSet<Routes> LocalRoutes { get; set; }
         public DbSet<PinTypes> LocalPinsTypes { get; set; }
         public DbSet<RouteTypes> LocalRouteTypes { get; set; }
+        public DbSet<RoutePins> LocalRoutesPins { get; set; }
 
         public LocalContext()
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -36,6 +36,11 @@ namespace MAUtour.Local.DBConnect
                 .WithMany(p => p.Routes)
                 .HasForeignKey(p => p.RouteTypeId);
 
+            modelBuilder.Entity<RoutePins>()
+                .HasOne(p => p.Routes)
+                .WithMany(p => p.Pins)
+                .HasForeignKey(p => p.RoutesId);
+            
             modelBuilder.Entity<PinTypes>().HasData(DictionaryData.GetPinTypes());
             modelBuilder.Entity<RouteTypes>().HasData(DictionaryData.GetRouteTypes());
 
