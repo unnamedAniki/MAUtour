@@ -7,7 +7,7 @@ public partial class AppShell : Shell
 	public AppShell()
     {
         Routing.RegisterRoute("pin/details", typeof(PinPage));
-        Routing.RegisterRoute("Map", typeof(MapPage));
+        Routing.RegisterRoute("MapPage", typeof(MapPage));
         InitializeComponent();
 	}
 }
